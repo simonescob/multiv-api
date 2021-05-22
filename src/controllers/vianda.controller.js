@@ -48,9 +48,7 @@ export const createVianda = async (req, res, next) => {
     await newVianda
       .save()
       .then((result) => {
-          
-            res.json(result);
-          
+        res.json(result);
       })
       .catch((err) => {
         res.status(500).json({ err });
@@ -60,69 +58,65 @@ export const createVianda = async (req, res, next) => {
   }
 };
 
-// export const findAllUsedVehicles = async (req, res, next) => {
-//   try {
-//     const usedVehicles = await Vehicle.find({ used: true });
-//     res.json(usedVehicles);
-//   } catch (err) {
-//     next(err);
-//   }
-// };
+export const findAllUsedViandas = async (req, res, next) => {
+  await Vianda.find({ used: true })
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      throw err;
+    });
+  // res.json(usedViandas);
+};
 
-// export const findOneVehicle = async (req, res, next) => {
-//   const { id } = req.params;
+export const findOneVianda = async (req, res, next) => {
+  const { id } = req.params;
 
-//   try {
-//     const vehicle = await Vehicle.findById(id);
-//     if (!vehicle) {
-//       return res.status(404).json({
-//         error_message: `The vehicle with id ${id} does not exists.`,
-//       });
-//     }
+  try {
+    const vianda = await Vianda.findById(id);
+    if (!vianda) {
+      return res.status(404).json({
+        error_message: `The vianda with id ${id} does not exists.`,
+      });
+    }
 
-//     res.json(vehicle);
-//   } catch (err) {
-//     next(err);
-//     // res.status(500).json({
-//     //   message_error: err.message || `Error retrieving vehicle with id: ${id}`,
-//     // });
-//   }
-// };
+    res.json(vianda);
+  } catch (err) {
+    next(err);
+  }
+};
 
-// export const deleteVehicle = async (req, res, next) => {
-//   const { id } = req.params;
-//   try {
-//     const deletedVehicle = await Vehicle.findByIdAndDelete(id);
-//     if (!deletedVehicle) {
-//       return res.status(404).json({
-//         error_message: `The vehicle with id: ${id} does not exists.`,
-//       });
-//     }
-//     res.json({
-//       message: `Vehicle with id: ${id} was deleted.`,
-//     });
-//   } catch (err) {
-//     next(err);
-//     // res.status(500).json({
-//     //   message_error: err.message || `Error deleting vehicle with id: ${id}`,
-//     // });
-//   }
-// };
+export const deleteVianda = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const deletedVianda = await Vianda.findByIdAndDelete(id);
+    if (!deletedVianda) {
+      return res.status(404).json({
+        error_message: `The vianda with id: ${id} does not exists.`,
+      });
+    }
+    res.json({
+      message: `Vianda with id: ${id} was deleted.`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
-// export const updateVehicle = async (req, res, next) => {
-//   const id = req.params.id;
-//   try {
-//     const updatedVehicle = await Vehicle.findByIdAndUpdate(id, req.body);
+export const updateVianda = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const updatedVianda = await Vianda.findByIdAndUpdate(id, req.body);
 
-//     if (!updatedVehicle) {
-//       return res.status(404).json({
-//         error_message: `The vehicle with id: ${id} does not exists.`,
-//       });
-//     }
-//     res.json({
-//       message: `Vehicle ${id} updated.`,
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
+    if (!updatedVianda) {
+      return res.status(404).json({
+        error_message: `The vianda with id: ${id} does not exists.`,
+      });
+    }
+    res.json({
+      message: `Vianda ${id} updated.`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};

@@ -7,12 +7,12 @@ router.post('/', viandaController.createVianda);
 
 router.get('/', viandaController.findAllViandas);
 
-// router.get('/used', vehicleController.findAllUsedVehicles);
+router.get('/used', viandaController.findAllUsedViandas);
 
-// router.get('/:id', vehicleController.findOneVehicle);
+router.get('/:id', viandaController.findOneVianda);
 
-// router.delete('/:id', vehicleController.deleteVehicle);
+router.delete('/:id', viandaController.deleteVianda);
 
-// router.put('/:id', vehicleController.updateVehicle);
+router.put('/:id', viandaController.updateVianda);
 
 export default router;
