@@ -7,7 +7,7 @@ router.post('/', viandaController.createVianda);
 
 router.get('/', viandaController.findAllViandas);
 
-router.get('/used', viandaController.findAllUsedViandas);
+router.get('/active', viandaController.findAllActiveViandas);
 
 router.get('/:id', viandaController.findOneVianda);
 

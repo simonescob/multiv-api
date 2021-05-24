@@ -3,19 +3,25 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 const viandaSchema = new Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true,
       trim: true,
-      maxlength: 100
+      maxlength: 100,
     },
     description: {
       type: String,
       required: true,
       trim: true,
-      maxlength: 100
+      maxlength: 100,
     },
-    used: {
+    ingredients: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Ingredient',
+      }
+    ],
+    active: {
       type: Boolean,
       default: false,
     },
@@ -27,6 +33,5 @@ const viandaSchema = new Schema(
 );
 
 viandaSchema.plugin(mongoosePaginate);
-
 
 export default model('Vianda', viandaSchema);

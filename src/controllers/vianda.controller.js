@@ -1,18 +1,23 @@
 import Vianda from '../models/Vianda';
+import Ingredient from '../models/Ingredient';
 import { getPagination } from '../libs/getPagination';
 
 export const findAllViandas = async (req, res, next) => {
   try {
-    const { size, page, title } = req.query;
+    const { size, page, name } = req.query;
 
-    const condition = title
+    const condition = name
       ? {
-          title: { $regex: new RegExp(title), $options: 'i' },
+          name: { $regex: new RegExp(name), $options: 'i' },
         }
       : {};
 
     const { limit, offset } = getPagination(page, size);
-    const data = await Vianda.paginate(condition, { offset, limit, title });
+    const data = await Vianda.paginate(condition, {
+      offset,
+      limit,
+      name,
+    });
 
     res.json({
       totalItems: data.totalDocs,
@@ -26,9 +31,9 @@ export const findAllViandas = async (req, res, next) => {
 };
 
 export const createVianda = async (req, res, next) => {
-  if (!req.body.title) {
+  if (!req.body.name) {
     return res.status(400).send({
-      error_message: 'Vianda title is required',
+      error_message: 'Vianda name is required',
     });
   }
 
@@ -38,35 +43,46 @@ export const createVianda = async (req, res, next) => {
     });
   }
 
+  if (!req.body.ingredients) {
+    return res.status(400).send({
+      error_message: 'Vianda ingredients is required',
+    });
+  }
+
   try {
     const newVianda = new Vianda({
-      title: req.body.title,
+      name: req.body.name,
       description: req.body.description,
-      used: req.body.used ? req.body.used : false,
+      ingredients: req.body.ingredients,
+      active: req.body.active ? req.body.active : false,
     });
 
-    await newVianda
-      .save()
-      .then((result) => {
-        res.json(result);
-      })
-      .catch((err) => {
-        res.status(500).json({ err });
-      });
+    const ings = Array();
+
+    newVianda.ingredients.map((ingredient) => {
+      ings.push(ingredient);
+    });
+
+    Ingredient.find({ _id: { $in: ings } }, async (err, data) => {
+      if (ings.length === data.length) {
+        await newVianda
+          .save()
+          .then((result) => {
+            res.json({ result });
+          })
+          .catch((err) => {
+            // res.status(500).json({ err });
+            throw err;
+          });
+      } else {
+        return res.status(500).send({
+          error_message: `Alguno ingrediente es inexistente. Error: ${err}`,
+        });
+      }
+    });
   } catch (err) {
     next(err);
   }
-};
-
-export const findAllUsedViandas = async (req, res, next) => {
-  await Vianda.find({ used: true })
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      throw err;
-    });
-  // res.json(usedViandas);
 };
 
 export const findOneVianda = async (req, res, next) => {
@@ -86,6 +102,43 @@ export const findOneVianda = async (req, res, next) => {
   }
 };
 
+
+export const findAllActiveViandas = async (req, res, next) => {
+  try {
+    const activeViandas = await Vianda.find({ active: true });
+    res.json({activeViandas});
+  } catch (err) {
+    next(err);
+  }
+  // await Vianda.find({ used: true })
+  //   .then((result) => {
+  //     res.json(result);
+  //   })
+  //   .catch((err) => {
+  //     throw err;
+  //   });
+  // // res.json(usedViandas);
+};
+
+export const updateVianda = async (req, res, next) => {
+    const id = req.params.id;
+    try {
+      const updatedVianda = await Vianda.findByIdAndUpdate(id, req.body);
+  
+      if (!updatedVianda) {
+        return res.status(404).json({
+          error_message: `The vianda with id: ${id} does not exists.`,
+        });
+      }
+      res.json({
+        message: `Vianda ${id} updated.`,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+
 export const deleteVianda = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -103,20 +156,4 @@ export const deleteVianda = async (req, res, next) => {
   }
 };
 
-export const updateVianda = async (req, res, next) => {
-  const id = req.params.id;
-  try {
-    const updatedVianda = await Vianda.findByIdAndUpdate(id, req.body);
 
-    if (!updatedVianda) {
-      return res.status(404).json({
-        error_message: `The vianda with id: ${id} does not exists.`,
-      });
-    }
-    res.json({
-      message: `Vianda ${id} updated.`,
-    });
-  } catch (err) {
-    next(err);
-  }
-};

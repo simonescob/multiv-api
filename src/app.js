@@ -1,5 +1,6 @@
 import express from 'express';
 import viandasRoutes from './routes/viandas.routes';
+import ingredientsRoutes from './routes/ingredients.routes';
 //import morgan from 'morgan';
 
 import cors from 'cors';
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to my app' });
 });
 app.use('/api/viandas', viandasRoutes);
+app.use('/api/ingredients', ingredientsRoutes);
 
 //Catch 404
 app.use(notFoundHandler);
