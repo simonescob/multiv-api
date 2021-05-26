@@ -13,7 +13,6 @@ export const findAllViandas = async (req, res, next) => {
       : {};
 
     const { limit, offset } = getPagination(page, size);
-    // const data = await Vehicle.populate('brand').paginate(condition, { offset, limit, title });
 
     const data = await Vianda.paginate(condition, {
       offset,
