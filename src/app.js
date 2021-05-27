@@ -3,6 +3,7 @@ import viandasRoutes from './routes/viandas.routes';
 import ingredientsRoutes from './routes/ingredients.routes';
 import menusRoutes from './routes/menus.routes';
 import ordersRoutes from './routes/orders.routes';
+import usersRoutes from './routes/users.routes';
 //import morgan from 'morgan';
 
 import cors from 'cors';
@@ -30,6 +31,7 @@ app.use('/api/viandas', viandasRoutes);
 app.use('/api/ingredients', ingredientsRoutes);
 app.use('/api/menus', menusRoutes);
 app.use('/api/orders', ordersRoutes);
+app.use('/api/users', usersRoutes);
 
 //Catch 404
 app.use(notFoundHandler);

@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-const orderSchema = new Schema(
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -9,16 +9,16 @@ const orderSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    coupons: {
+      type: Number,
+      maxlength: 3
     },
-    comments: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
-    },
+    orders: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Order',
+      }
+    ],
     active: {
       type: Boolean,
       default: false,
@@ -30,6 +30,6 @@ const orderSchema = new Schema(
   }
 );
 
-orderSchema.plugin(mongoosePaginate);
+userSchema.plugin(mongoosePaginate);
 
-export default model('Order', orderSchema);
+export default model('User', userSchema);

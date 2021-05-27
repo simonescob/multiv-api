@@ -18,7 +18,7 @@ export const findAllOrders = async (req, res, next) => {
       offset,
       limit,
       name,
-      // populate: 'ingredients',
+      populate: 'user',
     });
 
     res.json({
