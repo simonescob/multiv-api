@@ -13,6 +13,10 @@ const userSchema = new Schema(
       type: Number,
       maxlength: 3
     },
+    medical: {
+      type: Boolean,
+      default: false
+    },
     orders: [
       {
         type: Schema.Types.ObjectId,
