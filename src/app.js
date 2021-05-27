@@ -2,6 +2,7 @@ import express from 'express';
 import viandasRoutes from './routes/viandas.routes';
 import ingredientsRoutes from './routes/ingredients.routes';
 import menusRoutes from './routes/menus.routes';
+import ordersRoutes from './routes/orders.routes';
 //import morgan from 'morgan';
 
 import cors from 'cors';
@@ -28,6 +29,7 @@ app.get('/', (req, res) => {
 app.use('/api/viandas', viandasRoutes);
 app.use('/api/ingredients', ingredientsRoutes);
 app.use('/api/menus', menusRoutes);
+app.use('/api/orders', ordersRoutes);
 
 //Catch 404
 app.use(notFoundHandler);
