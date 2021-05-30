@@ -52,7 +52,7 @@ export const createOrder = async (req, res, next) => {
       comments: req.body.comments,
       user: req.body.user,
       arrival_date: req.body.arrival_date,
-      active: req.body.active ? req.body.active : false,
+      active: req.body.active ? req.body.active : true,
     });
 
     await newOrder

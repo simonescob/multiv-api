@@ -56,7 +56,7 @@ export const createMenu = async (req, res, next) => {
       name: req.body.name,
       description: req.body.description,
       viandas: req.body.viandas,
-      active: req.body.active ? req.body.active : false,
+      active: req.body.active ? req.body.active : true,
     });
 
     const viandas = Array();

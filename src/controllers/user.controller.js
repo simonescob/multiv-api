@@ -46,7 +46,7 @@ export const createUser = async (req, res, next) => {
       location: req.body.location,
       age: req.body.age,
       medical: req.body.medical ? req.body.medical : false,
-      active: req.body.active ? req.body.active : false,
+      active: req.body.active ? req.body.active : true,
     });
 
     await newUser

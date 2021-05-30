@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 
 //routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to my app' });
+  res.json({ message: 'Welcome to my multiv-app' });
 });
 app.use('/api/viandas', viandasRoutes);
 app.use('/api/ingredients', ingredientsRoutes);

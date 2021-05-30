@@ -8,7 +8,11 @@ const ingredientSchema = new Schema(
       required: true,
       trim: true,
       maxlength: 100
-    }
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     versionKey: false,

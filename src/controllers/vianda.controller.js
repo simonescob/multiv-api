@@ -56,7 +56,7 @@ export const createVianda = async (req, res, next) => {
       name: req.body.name,
       description: req.body.description,
       ingredients: req.body.ingredients,
-      active: req.body.active ? req.body.active : false,
+      active: req.body.active ? req.body.active : true,
     });
 
     const ings = Array();
