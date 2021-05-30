@@ -51,6 +51,7 @@ export const createOrder = async (req, res, next) => {
       name: req.body.name,
       comments: req.body.comments,
       user: req.body.user,
+      arrival_date: req.body.arrival_date,
       active: req.body.active ? req.body.active : false,
     });
 
@@ -63,35 +64,10 @@ export const createOrder = async (req, res, next) => {
             throw err;
           });
 
-    // const ings = Array();
-
-    // newVianda.ingredients.map((ingredient) => {
-    //   ings.push(ingredient);
-    // });
-
-    // Ingredient.find({ _id: { $in: ings } }, async (err, data) => {
-    //   if (ings.length === data.length) {
-    //     await newVianda
-    //       .save()
-    //       .then((result) => {
-    //         res.json({ result });
-    //       })
-    //       .catch((err) => {
-    //         // res.status(500).json({ err });
-    //         throw err;
-    //       });
-    //   } else {
-    //     return res.status(500).send({
-    //       error_message: `Alguno ingrediente es inexistente. Error: ${err}`,
-    //     });
-    //   }
-    // });
   } catch (err) {
     next(err);
   }
 };
-
-
 
 export const findOneOrder = async (req, res, next) => {
   const { id } = req.params;

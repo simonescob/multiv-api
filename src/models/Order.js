@@ -19,10 +19,17 @@ const orderSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
-    active: {
+    arrival_date: {
+      type: Date
+    },
+    delivered: {
       type: Boolean,
       default: false,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    }
   },
   {
     versionKey: false,

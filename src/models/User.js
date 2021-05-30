@@ -9,20 +9,33 @@ const userSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
-    coupons: {
+    direction: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+    location: [
+      {
+        type: Number,
+      },
+      {
+        type: Number,
+      },
+    ],
+    age: {
       type: Number,
-      maxlength: 3
+      required: true,
+      maxlength: 3,
     },
     medical: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    orders: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Order',
-      }
-    ],
+    plan: {
+      type: Schema.Types.ObjectId,
+      ref: 'Plan',
+    },
     active: {
       type: Boolean,
       default: false,
