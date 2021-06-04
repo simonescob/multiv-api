@@ -9,6 +9,18 @@ const userSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
+    phone: {
+      type: String,
+      required: false,
+      trim: true,
+      maxlength: 16,
+    },
+    email: {
+      type: String,
+      required: false,
+      trim: true,
+      maxlength: 60,
+    },
     direction: {
       type: String,
       required: true,
@@ -29,6 +41,10 @@ const userSchema = new Schema(
       maxlength: 3,
     },
     medical: {
+      type: Boolean,
+      default: false,
+    },
+    isAdmin: {
       type: Boolean,
       default: false,
     },

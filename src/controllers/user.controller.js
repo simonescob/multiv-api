@@ -42,10 +42,13 @@ export const createUser = async (req, res, next) => {
   try {
     const newUser = new User({
       name: req.body.name,
+      phone: req.body.phone,
+      email: req.body.email,
       direction: req.body.direction,
       location: req.body.location,
       age: req.body.age,
       medical: req.body.medical ? req.body.medical : false,
+      isAdmin: req.body.isAdmin ? req.body.isAdmin : false,
       active: req.body.active ? req.body.active : true,
     });
 
