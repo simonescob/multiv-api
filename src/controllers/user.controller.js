@@ -1,4 +1,5 @@
 import User from '../models/User';
+import bcrypt from 'bcrypt';
 import { getPagination } from '../libs/getPagination';
 
 export const findAllUsers = async (req, res, next) => {
@@ -38,12 +39,13 @@ export const createUser = async (req, res, next) => {
     });
   }
 
-
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
   try {
     const newUser = new User({
       name: req.body.name,
       phone: req.body.phone,
       email: req.body.email,
+      password: hashedPassword,
       direction: req.body.direction,
       location: req.body.location,
       age: req.body.age,
