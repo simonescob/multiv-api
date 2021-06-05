@@ -106,7 +106,7 @@ export const findOneMenu = async (req, res, next) => {
 
 export const findAllActiveMenus = async (req, res, next) => {
   try {
-    const activeMenus = await Menu.find({ active: true });
+    const activeMenus = await Menu.find({ active: true }).populate('viandas');
     res.json({activeMenus});
   } catch (err) {
     next(err);
