@@ -70,6 +70,7 @@ export const createVianda = async (req, res, next) => {
         await newVianda
           .save()
           .then((result) => {
+            console.log(`Vianda with id ${result._id} was created.`)
             res.json({ result });
           })
           .catch((err) => {
