@@ -18,7 +18,7 @@ export const findAllOrders = async (req, res, next) => {
       offset,
       limit,
       name,
-      populate: 'user',
+      populate: 'vianda'
     });
 
     res.json({
@@ -33,9 +33,22 @@ export const findAllOrders = async (req, res, next) => {
 };
 
 export const createOrder = async (req, res, next) => {
+  //valido vengan datos
   if (!req.body.name) {
     return res.status(400).send({
       error_message: 'Order name is required',
+    });
+  }
+
+  if (!req.body.user) {
+    return res.status(400).send({
+      error_message: 'User is required',
+    });
+  }
+
+  if (!req.body.vianda) {
+    return res.status(400).send({
+      error_message: 'Vianda is required',
     });
   }
 
@@ -44,28 +57,28 @@ export const createOrder = async (req, res, next) => {
       error_message: 'Order comments is required',
     });
   }
-
+ 
   
-
-
+  //quiero guardar una orden
   try {
     const newOrder = new Order({
       name: req.body.name,
-      comments: req.body.comments,
       user: req.body.user,
+      vianda: req.body.vianda,
+      comments: req.body.comments,
       arrival_date: req.body.arrival_date,
       active: req.body.active ? req.body.active : true,
     });
 
     await newOrder
-          .save()
-          .then((result) => {
-            res.json({ result });
-          })
-          .catch((err) => {
-            throw err;
-          });
-
+      .save()
+      .then((result) => {
+        console.log(`Order with id ${result._id} was created.`)
+        res.json({ result });
+      })
+      .catch((err) => {
+        throw err;
+      });
   } catch (err) {
     next(err);
   }
@@ -75,7 +88,7 @@ export const findOneOrder = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const order = await Order.findById(id);
+    const order = await Order.findById(id).populate('vianda').populate('user');
     if (!order) {
       return res.status(404).json({
         error_message: `The order with id ${id} does not exists.`,
@@ -88,11 +101,10 @@ export const findOneOrder = async (req, res, next) => {
   }
 };
 
-
 export const findAllActiveOrders = async (req, res, next) => {
   try {
     const activeOrders = await Order.find({ active: true });
-    res.json({activeOrders});
+    res.json({ activeOrders });
   } catch (err) {
     next(err);
   }
@@ -106,23 +118,22 @@ export const findAllActiveOrders = async (req, res, next) => {
 };
 
 export const updateOrder = async (req, res, next) => {
-    const id = req.params.id;
-    try {
-      const updateOrder = await Order.findByIdAndUpdate(id, req.body);
-  
-      if (!updateOrder) {
-        return res.status(404).json({
-          error_message: `The order with id: ${id} does not exists.`,
-        });
-      }
-      res.json({
-        message: `Order ${id} updated.`,
-      });
-    } catch (err) {
-      next(err);
-    }
-  };
+  const id = req.params.id;
+  try {
+    const updateOrder = await Order.findByIdAndUpdate(id, req.body);
 
+    if (!updateOrder) {
+      return res.status(404).json({
+        error_message: `The order with id: ${id} does not exists.`,
+      });
+    }
+    res.json({
+      message: `Order ${id} updated.`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const deleteOrder = async (req, res, next) => {
   const { id } = req.params;
@@ -140,5 +151,3 @@ export const deleteOrder = async (req, res, next) => {
     next(err);
   }
 };
-
-

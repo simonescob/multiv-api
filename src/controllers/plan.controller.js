@@ -16,7 +16,7 @@ export const findAllPlans = async (req, res, next) => {
     const data = await Plan.paginate(condition, {
       offset,
       limit,
-      name
+      name,
     });
 
     res.json({
@@ -49,19 +49,19 @@ export const createPlan = async (req, res, next) => {
     const newPlan = new Plan({
       name: req.body.name,
       coupons: req.body.coupons,
-      changes: Math.trunc(req.body.coupons/changes_coeff),
+      changes: Math.trunc(req.body.coupons / changes_coeff),
       active: req.body.active ? req.body.active : true,
     });
 
     await newPlan
-    .save()
-    .then((result) => {
-      res.json({ result });
-    })
-    .catch((err) => {
-      throw err;
-    });
-
+      .save()
+      .then((result) => {
+        console.log(`Plan with id ${result._id} was created.`);
+        res.json({ result });
+      })
+      .catch((err) => {
+        throw err;
+      });
   } catch (err) {
     next(err);
   }
@@ -84,7 +84,6 @@ export const createPlan = async (req, res, next) => {
 //   }
 // };
 
-
 // export const findAllActiveViandas = async (req, res, next) => {
 //   try {
 //     const activeViandas = await Vianda.find({ active: true });
@@ -106,7 +105,7 @@ export const createPlan = async (req, res, next) => {
 //     const id = req.params.id;
 //     try {
 //       const updatedVianda = await Vianda.findByIdAndUpdate(id, req.body);
-  
+
 //       if (!updatedVianda) {
 //         return res.status(404).json({
 //           error_message: `The vianda with id: ${id} does not exists.`,
@@ -119,7 +118,6 @@ export const createPlan = async (req, res, next) => {
 //       next(err);
 //     }
 //   };
-
 
 // export const deleteVianda = async (req, res, next) => {
 //   const { id } = req.params;
@@ -137,5 +135,3 @@ export const createPlan = async (req, res, next) => {
 //     next(err);
 //   }
 // };
-
-

@@ -41,7 +41,8 @@ export const createIngredient = async (req, res, next) => {
     await newIngredient
       .save()
       .then((result) => {
-        res.json(result);
+        console.log(`Ingredient with id ${result._id} was created.`)
+        res.json({result});
       })
       .catch((err) => {
         res.status(500).json({ err });

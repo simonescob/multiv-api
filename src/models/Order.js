@@ -13,6 +13,10 @@ const orderSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+    vianda: {
+      type: Schema.Types.ObjectId,
+      ref: 'Vianda',
+    },
     comments: {
       type: String,
       required: true,
@@ -20,7 +24,7 @@ const orderSchema = new Schema(
       maxlength: 100,
     },
     arrival_date: {
-      type: Date
+      type: Date,
     },
     delivered: {
       type: Boolean,
@@ -29,7 +33,7 @@ const orderSchema = new Schema(
     active: {
       type: Boolean,
       default: true,
-    }
+    },
   },
   {
     versionKey: false,

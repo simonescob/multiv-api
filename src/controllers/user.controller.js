@@ -57,6 +57,7 @@ export const createUser = async (req, res, next) => {
     await newUser
       .save()
       .then((result) => {
+        console.log(`User with id ${result._id} was created.`);
         res.json({ result });
       })
       .catch((err) => {

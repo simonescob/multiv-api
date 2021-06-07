@@ -20,7 +20,7 @@ export const findAllMenus = async (req, res, next) => {
       name,
       populate: 'viandas',
     });
-    
+
     res.json({
       totalItems: data.totalDocs,
       menus: data.docs,
@@ -70,6 +70,7 @@ export const createMenu = async (req, res, next) => {
         await newMenu
           .save()
           .then((result) => {
+            console.log(`Menu with id ${result._id} was created.`);
             res.json({ result });
           })
           .catch((err) => {
@@ -107,30 +108,29 @@ export const findOneMenu = async (req, res, next) => {
 export const findAllActiveMenus = async (req, res, next) => {
   try {
     const activeMenus = await Menu.find({ active: true }).populate('viandas');
-    res.json({activeMenus});
+    res.json({ activeMenus });
   } catch (err) {
     next(err);
   }
- 
 };
 
 export const updateMenu = async (req, res, next) => {
-    const id = req.params.id;
-    try {
-      const updatedMenu = await Menu.findByIdAndUpdate(id, req.body);
+  const id = req.params.id;
+  try {
+    const updatedMenu = await Menu.findByIdAndUpdate(id, req.body);
 
-      if (!updatedMenu) {
-        return res.status(404).json({
-          error_message: `The menu with id: ${id} does not exists.`,
-        });
-      }
-      res.json({
-        message: `Menu ${id} updated.`,
+    if (!updatedMenu) {
+      return res.status(404).json({
+        error_message: `The menu with id: ${id} does not exists.`,
       });
-    } catch (err) {
-      next(err);
     }
-  };
+    res.json({
+      message: `Menu ${id} updated.`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const deleteMenu = async (req, res, next) => {
   const { id } = req.params;
