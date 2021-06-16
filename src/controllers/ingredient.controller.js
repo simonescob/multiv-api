@@ -20,6 +20,9 @@ export const findAllIngredients = async (req, res, next) => {
       totalPages: data.totalPages,
       currentPage: data.page - 1,
     });
+
+    console.log(`Se han consultado los ingredientes.`)
+
   } catch (err) {
     next(err);
   }
