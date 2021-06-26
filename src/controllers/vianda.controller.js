@@ -32,6 +32,21 @@ export const findAllViandas = async (req, res, next) => {
   }
 };
 
+// function interseccion(datos1, datos2, comparacion) {
+//   if (!Array.isArray(datos1) || !Array.isArray(datos2)) {
+//       throw TypeError('Los argumentos «datos1» y «datos2» deben ser arreglos.');
+//   }
+
+//   if (typeof comparacion !== 'function') {
+//       throw TypeError('El argumento «comparacion» debe ser una función.');
+//   }
+
+//   let conjunto1 = [...datos1.map(d => comparacion(d))];
+//   let conjunto2 = [...datos2.map(d => comparacion(d))];
+
+//   return Array.from(new Set([...conjunto1].filter(e => new Set(conjunto2).has(e))));
+// }
+
 export const createVianda = async (req, res, next) => {
   if (!req.body.name) {
     return res.status(400).send({
@@ -51,210 +66,50 @@ export const createVianda = async (req, res, next) => {
     });
   }
 
+  //traigo ings
   try {
-    //todos los nombres
+    //los que tengo
     const names = req.body.ingredients;
-    const ings = [];
-    
 
-    const ingredientlist = await names.map(async (name) => {
-      const ingredient = await Ingredient.find(
-        { name: name },
-        async (err, data) => {
-          if (data.length === 0) {
-            console.log('crear ingrediente nuevo');
-            try {
-              const newIngredient = new Ingredient({
-                name: name,
-                active: true,
-              });
+    // los que estan cargados
+    const ingredientsObjectList = await Ingredient.find(
+      { name: { $in: names } },
+      async (err, data) => (data ? data : err)
+    );
 
-              const newing = await newIngredient
-                .save()
-                .then((result) => {
-                  console.log(`Ingredient with id ${result._id} was created.`);
+    //hago el array de ids que existen
+    const idIngredientsList = ingredientsObjectList.map(({ _id }) => _id);
+    //hago el array de names que existen
+    const nameIngredientsList = ingredientsObjectList.map(({ name }) => name);
 
-                  res.json({ result });
-                  return result._id;
-                })
-                .catch((err) => {
-                  res.status(500).json({ err });
-                });
-
-              return newing;
-            } catch (err) {
-              next(err);
-            }
-          } else {
-            console.log('este ingrediente ya existe');
-
-            return data[0]._id;
-          }
-        }
-      );
-
-      
-      await console.log(`Id de ingrediente: ${ingredient[0]._id}`);
-
-      await ings.push(ingredient[0]._id);
-
-      // console.log(`Array de ings: ${ings}`);
-      return ings;
-    });
-
-
-    
-    const carrea = [];
-    const ingredientsarray = await ingredientlist.map(async (ingredient) => {
-      // console.log(ingredient)
-
-      await ingredient.then(async (res) => {
-        console.log(res)
-       await carrea.push(res);
-        
+    const newIngredients = names.reduce((acu, ele) => {
+      const newEl = nameIngredientsList.filter((e) => {
+        return e === ele;
       });
-      return carrea;
-    });
 
-    // await ingredient.then((res) => {
-    //   return console.log(`esto es la res ${res}`);
-    // });
-    // console.log(ingredient)
-    // const ing = await ingredient
-    // return ing
-    //   // return ingredient.then((res) => res.push(res));
-    // });
+      newEl[0] ? acu.push(newEl[0]) : null;
 
-    console.log(ingredientsarray);
+      return acu;
+    }, []);
 
-    // cargados.map(ingrediente => {
+    
 
-    //   return ings.push(ingrediente._id)
+    console.log(newIngredients);
 
-    //   // console.log(ingrediente._id)
-    // })
+    console.log(`Los ingresados por usuarios: ${names}`);
+    console.log(`Los que ya estan cargados por id: ${idIngredientsList}`);
+    console.log(`Los que ya estan cargados por nombre ${nameIngredientsList}`);
+  } catch (err) {
+    next(err);
+  }
 
-    // const existen = Ingredient.find(
-    //   { name: { $in: names } },
-    //   async (err, data) => data
-    // )
-    //   .then((res) => {
-    //     res.map((ingredientes) => {
-    //       ings.push(ingredientes._id);
-
-    //       return ings;
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     throw err;
-    //   });
-
-    // existen.then(res => {
-    //   console.log(res)
-    // });
-
-    // console.log(ings);
-
-    // const promises = names.map((name) => {
-    //   Ingredient.find({ name: name }, async (err, data) => {
-    //     if (data.length === 0) {
-    //       try {
-    //         const newIngredient = new Ingredient({
-    //           name: name,
-    //           active: true,
-    //         });
-
-    //         await newIngredient
-    //           .save()
-    //           .then(async (result) => {
-    //             console.log(`Ingredient with id ${result._id} was created.`);
-    //             ings.push(result._id);
-    //             // console.log(`ahora hay ${ings}`)
-    //             res.json({ result });
-    //           })
-    //           .catch((err) => {
-    //             res.status(500).json({ err });
-    //           });
-    //       } catch (err) {
-    //         next(err);
-    //       }
-    //     } else {
-    //       ings.push(data[0]._id);
-    //       // console.log(`ahora hay ${ings}`)
-    //     }
-
-    //     // console.log(`ahora hay ${ings} en el find`)
-    //   })
-    //     .then((res) => {
-    //       // console.log(`La res: ${res}`)
-    //       // console.log(`Los ings: ${ings}`)
-    //       // // ings;
-    //       return res;
-    //     })
-    //     .catch((err) => {
-    //       throw err;
-    //     });
-    // });
-
-    // promises.map((promise) => {
-
-    //   promise.then(res => {
-    //     console.log(res)
-    //   })
-
-    // });
-
-    // console.log(`hay ${promises.then}`)
-
-    // if(ings) {
-
-    //   console.log(`hay ${ings}`)
-    //   console.log(`hay ${promises[0].then(console.log(ings))}`)
-    //   console.log(`hay ${promises}`)
-    // } else {
-
-    //   console.log(`hay ${promises}`)
-    // }
-
-    // console.log(ings);
-
+  try {
     const newVianda = new Vianda({
       name: req.body.name,
       description: req.body.description,
-      ingredients: ings,
+      ingredients: [],
       active: req.body.active ? req.body.active : true,
     });
-
-    // console.log(newVianda.ingredients);
-
-    // const ings = Array();
-
-    // newVianda.ingredients.map((ingredient) => {
-    //   ings.push(ingredient);
-    // });
-
-    // console.log(req.body.ingredients)
-    // console.log(newVianda.ingredients)
-    // console.log(ings)
-
-    // Ingredient.find({ _id: { $in: ings } }, async (err, data) => {
-    //   if (ings.length === data.length) {
-    //     await newVianda
-    //       .save()
-    //       .then((result) => {
-    //         console.log(`Vianda with id ${result._id} was created.`)
-    //         res.json({ result });
-    //       })
-    //       .catch((err) => {
-    //         // res.status(500).json({ err });
-    //         throw err;
-    //       });
-    //   } else {
-    //     return res.status(500).send({
-    //       error_message: `Alguno ingrediente es inexistente. Error: ${err}`,
-    //     });
-    //   }
-    // });
   } catch (err) {
     next(err);
   }
