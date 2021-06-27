@@ -32,20 +32,7 @@ export const findAllViandas = async (req, res, next) => {
   }
 };
 
-// function interseccion(datos1, datos2, comparacion) {
-//   if (!Array.isArray(datos1) || !Array.isArray(datos2)) {
-//       throw TypeError('Los argumentos «datos1» y «datos2» deben ser arreglos.');
-//   }
 
-//   if (typeof comparacion !== 'function') {
-//       throw TypeError('El argumento «comparacion» debe ser una función.');
-//   }
-
-//   let conjunto1 = [...datos1.map(d => comparacion(d))];
-//   let conjunto2 = [...datos2.map(d => comparacion(d))];
-
-//   return Array.from(new Set([...conjunto1].filter(e => new Set(conjunto2).has(e))));
-// }
 
 export const createVianda = async (req, res, next) => {
   if (!req.body.name) {
@@ -77,39 +64,68 @@ export const createVianda = async (req, res, next) => {
       async (err, data) => (data ? data : err)
     );
 
+    // console.log(ingredientsObjectList);
+
     //hago el array de ids que existen
     const idIngredientsList = ingredientsObjectList.map(({ _id }) => _id);
     //hago el array de names que existen
-    const nameIngredientsList = ingredientsObjectList.map(({ name }) => name);
+    const namesIngredientsList = ingredientsObjectList.map(({ name }) => name);
 
-    const newIngredients = names.reduce((acu, ele) => {
-      const newEl = nameIngredientsList.filter((e) => {
-        return e === ele;
-      });
+    //hago el array de los que no existen
+    const namesNoExisten = names.filter(
+      (el) => !namesIngredientsList.includes(el)
+    );
 
-      newEl[0] ? acu.push(newEl[0]) : null;
-
-      return acu;
+    const newIngredients = namesNoExisten.reduce((a, e) => {
+      a.push({ name: e });
+      return a;
     }, []);
 
-    
+    // console.log(newIngredients);
 
-    console.log(newIngredients);
+    const newIngredientData = async (data) => {
+      try {
+        const allNewSavedIngredients = await Ingredient.insertMany(data);
+        return allNewSavedIngredients;
+      } catch (err) {
+        throw err;
+      }
+    };
 
-    console.log(`Los ingresados por usuarios: ${names}`);
-    console.log(`Los que ya estan cargados por id: ${idIngredientsList}`);
-    console.log(`Los que ya estan cargados por nombre ${nameIngredientsList}`);
+    newIngredientData(newIngredients)
+      .then((res) => {
+
+        const allIngredientsIds = res.reduce((a, el) => {
+          a.push(el._id);
+          return a;
+        }, idIngredientsList);
+
+        return allIngredientsIds;
+      })
+      .then((res) => {
+        const newVianda = new Vianda({
+          name: req.body.name,
+          description: req.body.description,
+          ingredients: res,
+          active: req.body.active ? req.body.active : true,
+        });
+        return newVianda;
+      })
+      .then((res) => res.save())
+      .then((result) => {
+        res.json(result);
+      })
+      .catch((e) => console.log(e));
+
+    // console.log(`Los ingresados por usuarios: ${names}`);
+    // console.log(`Los que ya estan cargados por nombre ${namesIngredientsList}`);
+    // console.log(`Los que no estan cargados por nombre ${namesNoExisten}`);
+    // console.log(`Prontos para cargar por id ${idIngredientsList}`);
   } catch (err) {
     next(err);
   }
 
   try {
-    const newVianda = new Vianda({
-      name: req.body.name,
-      description: req.body.description,
-      ingredients: [],
-      active: req.body.active ? req.body.active : true,
-    });
   } catch (err) {
     next(err);
   }
@@ -119,7 +135,7 @@ export const findOneVianda = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const vianda = await Vianda.findById(id);
+    const vianda = await Vianda.findById(id).populate('ingredients');
     if (!vianda) {
       return res.status(404).json({
         error_message: `The vianda with id ${id} does not exists.`,
