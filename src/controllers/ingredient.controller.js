@@ -3,16 +3,16 @@ import { getPagination } from '../libs/getPagination';
 
 export const findAllIngredients = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query;
+    const { size, page, title } = req.query;
 
-    const condition = name
+    const condition = title
       ? {
-        name: { $regex: new RegExp(name), $options: 'i' },
+        title: { $regex: new RegExp(title), $options: 'i' },
         }
       : {};
 
     const { limit, offset } = getPagination(page, size);
-    const data = await Ingredient.paginate(condition, { offset, limit, name });
+    const data = await Ingredient.paginate(condition, { offset, limit, title });
 
     res.json({
       totalItems: data.totalDocs,
@@ -29,15 +29,15 @@ export const findAllIngredients = async (req, res, next) => {
 };
 
 export const createIngredient = async (req, res, next) => {
-  if (!req.body.name) {
+  if (!req.body.title) {
     return res.status(400).send({
-      error_message: 'Ingredient name is required',
+      error_message: 'Ingredient title is required',
     });
   }
 
   try {
     const newIngredient = new Ingredient({
-      name: req.body.name,
+      title: req.body.title,
       active: req.body.active ? req.body.active : true
     });
 

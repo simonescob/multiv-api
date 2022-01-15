@@ -3,7 +3,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 const viandaSchema = new Schema(
   {
-    name: {
+    title: {
       type: String,
       required: true,
       trim: true,

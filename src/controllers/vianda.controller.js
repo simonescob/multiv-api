@@ -2,14 +2,17 @@ import Vianda from '../models/Vianda';
 import Ingredient from '../models/Ingredient';
 import { getPagination } from '../libs/getPagination';
 
+
+
+
 export const findAllViandas = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query;
+    const { size, page, title } = req.query;
 
-    const condition = name
+    const condition = title
       ? {
-          name: { $regex: new RegExp(name), $options: 'i' },
-        }
+        title: { $regex: new RegExp(title), $options: 'i' },
+      }
       : {};
 
     const { limit, offset } = getPagination(page, size);
@@ -17,7 +20,7 @@ export const findAllViandas = async (req, res, next) => {
     const data = await Vianda.paginate(condition, {
       offset,
       limit,
-      name,
+      title,
       populate: 'ingredients',
     });
 
@@ -32,12 +35,11 @@ export const findAllViandas = async (req, res, next) => {
   }
 };
 
-
-
 export const createVianda = async (req, res, next) => {
-  if (!req.body.name) {
+
+  if (!req.body.title) {
     return res.status(400).send({
-      error_message: 'Vianda name is required',
+      error_message: 'Vianda title is required',
     });
   }
 
@@ -56,28 +58,30 @@ export const createVianda = async (req, res, next) => {
   //traigo ings
   try {
     //los que tengo
-    const names = req.body.ingredients;
+    const { ingredients } = req.body;
 
     // los que estan cargados
     const ingredientsObjectList = await Ingredient.find(
-      { name: { $in: names } },
+      { title: { $in: ingredients } },
       async (err, data) => (data ? data : err)
     );
 
-    // console.log(ingredientsObjectList);
 
     //hago el array de ids que existen
     const idIngredientsList = ingredientsObjectList.map(({ _id }) => _id);
-    //hago el array de names que existen
-    const namesIngredientsList = ingredientsObjectList.map(({ name }) => name);
+
+
+    //hago el array de titles que existen
+    const titlesIngredientsList = ingredientsObjectList.map(({ title }) => title);
 
     //hago el array de los que no existen
-    const namesNoExisten = names.filter(
-      (el) => !namesIngredientsList.includes(el)
+    const titlesNoExisten = ingredients.filter(
+      (el) => !titlesIngredientsList.includes(el)
     );
 
-    const newIngredients = namesNoExisten.reduce((a, e) => {
-      a.push({ name: e });
+
+    const newIngredients = titlesNoExisten.reduce((a, e) => {
+      a.push({ title: e });
       return a;
     }, []);
 
@@ -94,7 +98,6 @@ export const createVianda = async (req, res, next) => {
 
     newIngredientData(newIngredients)
       .then((res) => {
-
         const allIngredientsIds = res.reduce((a, el) => {
           a.push(el._id);
           return a;
@@ -103,18 +106,24 @@ export const createVianda = async (req, res, next) => {
         return allIngredientsIds;
       })
       .then((res) => {
+
         const newVianda = new Vianda({
-          name: req.body.name,
+          title: req.body.title,
           description: req.body.description,
           ingredients: res,
           active: req.body.active ? req.body.active : true,
         });
+
         return newVianda;
       })
       .then((res) => res.save())
       .then((result) => {
+
+        console.log(`Se ha creado una vianda con id: ${result._id}`)
         res.json(result);
+
       })
+
       .catch((e) => console.log(e));
 
     // console.log(`Los ingresados por usuarios: ${names}`);
@@ -155,14 +164,7 @@ export const findAllActiveViandas = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-  // await Vianda.find({ used: true })
-  //   .then((result) => {
-  //     res.json(result);
-  //   })
-  //   .catch((err) => {
-  //     throw err;
-  //   });
-  // // res.json(usedViandas);
+
 };
 
 export const updateVianda = async (req, res, next) => {
