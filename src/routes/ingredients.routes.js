@@ -9,6 +9,8 @@ router.get('/', ingredientController.findAllIngredients);
 
 router.get('/active', ingredientController.findAllActiveIngredients);
 
+router.get('/intrash', ingredientController.findAllinTrashIngredients);
+
 router.get('/:id', ingredientController.findOneIngredient);
 
 router.delete('/:id', ingredientController.deleteIngredient);

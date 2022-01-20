@@ -8,15 +8,18 @@ export const findAllIngredients = async (req, res, next) => {
     const condition = title
       ? {
         title: { $regex: new RegExp(title), $options: 'i' },
-        }
+      }
       : {};
 
     const { limit, offset } = getPagination(page, size);
     const data = await Ingredient.paginate(condition, { offset, limit, title });
 
+      //filtro que no esten en papelera
+    const noTrashDocs = data.docs.filter(item => item.inTrash === false)
+
     res.json({
-      totalItems: data.totalDocs,
-      ingredients: data.docs,
+      totalItems: noTrashDocs.length,
+      ingredients: noTrashDocs,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
     });
@@ -38,14 +41,18 @@ export const createIngredient = async (req, res, next) => {
   try {
     const newIngredient = new Ingredient({
       title: req.body.title,
-      active: req.body.active ? req.body.active : true
+      price: req.body.price,
+      stock: req.body.stock,
+      imgUrl: req.body.imgUrl,
+      active: req.body.active ? req.body.active : true,
+      inTrash: req.body.inTrash ? req.body.inTrash : false
     });
 
     await newIngredient
       .save()
       .then((result) => {
         console.log(`Ingredient with id ${result._id} was created.`)
-        res.json({result});
+        res.json({ result });
       })
       .catch((err) => {
         res.status(500).json({ err });
@@ -76,30 +83,45 @@ export const findOneIngredient = async (req, res, next) => {
 export const findAllActiveIngredients = async (req, res, next) => {
   try {
     const activeIngredients = await Ingredient.find({ active: true });
-    res.json({activeIngredients});
+    res.json({ activeIngredients });
   } catch (err) {
     next(err);
   }
- 
+
+};
+
+export const findAllinTrashIngredients = async (req, res, next) => {
+  try {
+    const inTrashIngredients = await Ingredient.find({ inTrash: true });
+    res.json({ inTrashIngredients });
+  } catch (err) {
+    next(err);
+  }
+
 };
 
 export const updateIngredient = async (req, res, next) => {
-    const id = req.params.id;
-    try {
-      const updatedIngredient = await Ingredient.findByIdAndUpdate(id, req.body);
+  const id = req.params.id;
 
-      if (!updatedIngredient) {
-        return res.status(404).json({
-          error_message: `The ingredient with id: ${id} does not exists.`,
-        });
-      }
-      res.json({
-        message: `Ingredient ${id} updated.`,
+  if (req.body.inTrash === true) {
+    req.body = {...req.body, active: false}
+  } 
+
+  try {
+    const updatedIngredient = await Ingredient.findByIdAndUpdate(id, req.body);
+
+    if (!updatedIngredient) {
+      return res.status(404).json({
+        error_message: `The ingredient with id: ${id} does not exists.`,
       });
-    } catch (err) {
-      next(err);
     }
-  };
+    res.json({
+      message: `Ingredient ${id} updated.`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const deleteIngredient = async (req, res, next) => {
   const { id } = req.params;
