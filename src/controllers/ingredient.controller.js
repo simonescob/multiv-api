@@ -3,23 +3,22 @@ import { getPagination } from '../libs/getPagination';
 
 export const findAllIngredients = async (req, res, next) => {
   try {
-    const { size, page, title } = req.query;
+    const { size, page, title, inTrash = false } = req.query;
 
-    const condition = title
-      ? {
-        title: { $regex: new RegExp(title), $options: 'i' },
-      }
-      : {};
+    const condition = { inTrash }
+
+    if (title) {
+      condition.title = { $regex: new RegExp(title), $options: 'i' }
+    }
+
 
     const { limit, offset } = getPagination(page, size);
     const data = await Ingredient.paginate(condition, { offset, limit, title });
 
-      //filtro que no esten en papelera
-    const noTrashDocs = data.docs.filter(item => item.inTrash === false)
 
     res.json({
-      totalItems: noTrashDocs.length,
-      ingredients: noTrashDocs,
+      totalItems: data.totalDocs,
+      ingredients: data.docs,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
     });
@@ -37,13 +36,13 @@ export const createIngredient = async (req, res, next) => {
       error_message: 'Ingredient title is required',
     });
   }
-
+  const NO_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1024px-Imagen_no_disponible.svg.png'
   try {
     const newIngredient = new Ingredient({
       title: req.body.title,
       price: req.body.price,
       stock: req.body.stock,
-      imgUrl: req.body.imgUrl,
+      imgUrl: req.body.imgUrl ? req.body.imgUrl : NO_IMAGE,
       active: req.body.active ? req.body.active : true,
       inTrash: req.body.inTrash ? req.body.inTrash : false
     });
@@ -104,8 +103,8 @@ export const updateIngredient = async (req, res, next) => {
   const id = req.params.id;
 
   if (req.body.inTrash === true) {
-    req.body = {...req.body, active: false}
-  } 
+    req.body = { ...req.body, active: false }
+  }
 
   try {
     const updatedIngredient = await Ingredient.findByIdAndUpdate(id, req.body);
