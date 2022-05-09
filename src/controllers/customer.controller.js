@@ -1,7 +1,7 @@
-import Costumer from '../models/Costumer';
+import Customer from '../models/Customer';
 import { getPagination } from '../libs/getPagination';
 
-export const findAllCostumers = async (req, res, next) => {
+export const findAllCustomers = async (req, res, next) => {
   try {
     const { size, page, name } = req.query;
 
@@ -13,7 +13,7 @@ export const findAllCostumers = async (req, res, next) => {
 
     const { limit, offset } = getPagination(page, size);
 
-    const data = await Costumer.paginate(condition, {
+    const data = await Customer.paginate(condition, {
       offset,
       limit,
       name
@@ -21,7 +21,7 @@ export const findAllCostumers = async (req, res, next) => {
 
     res.json({
       totalItems: data.totalDocs,
-      costumers: data.docs,
+      customers: data.docs,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
     });
@@ -30,17 +30,17 @@ export const findAllCostumers = async (req, res, next) => {
   }
 };
 
-export const createCostumer = async (req, res, next) => {
+export const createCustomer = async (req, res, next) => {
   if (!req.body.name) {
     return res.status(400).send({
-      error_message: 'Costumer name is required',
+      error_message: 'Customer name is required',
     });
   }
 
   const NO_AVATAR = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1024px-Imagen_no_disponible.svg.png'
 
   try {
-    const newCostumer = new Costumer({
+    const newCustomer = new Customer({
       name: req.body.name,
       phone: req.body.phone,
       email: req.body.email,
@@ -51,10 +51,10 @@ export const createCostumer = async (req, res, next) => {
       active: req.body.active ? req.body.active : true,
     });
 
-    await newCostumer
+    await newCustomer
       .save()
       .then((result) => {
-        console.log(`Costumer ${result._id} was created.`);
+        console.log(`Customer ${result._id} was created.`);
         res.json({ result });
       })
       .catch((err) => {
@@ -65,61 +65,61 @@ export const createCostumer = async (req, res, next) => {
   }
 };
 
-export const findOneCostumer = async (req, res, next) => {
+export const findOneCustomer = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const costumer = await Costumer.findById(id);
-    if (!costumer) {
+    const customer = await Customer.findById(id);
+    if (!customer) {
       return res.status(404).json({
-        error_message: `Not founded costumer ${id}.`,
+        error_message: `Not founded customer ${id}.`,
       });
     }
 
-    res.json(costumer);
+    res.json(customer);
   } catch (err) {
     next(err);
   }
 };
 
-export const findAllActiveCostumers = async (req, res, next) => {
+export const findAllActiveCustomers = async (req, res, next) => {
   try {
-    const activeCostumers = await Costumer.find({ active: true });
+    const activeCustomers = await Customer.find({ active: true });
     res.json({ activeCostumers });
   } catch (err) {
     next(err);
   }
 };
 
-export const updateCostumer = async (req, res, next) => {
+export const updateCustomer = async (req, res, next) => {
   const id = req.params.id;
   try {
-    const updatedCostumer = await Costumer.findByIdAndUpdate(id, req.body);
+    const updateCustomer = await Customer.findByIdAndUpdate(id, req.body);
 
-    if (!updatedCostumer) {
+    if (!updateCustomer) {
       return res.status(404).json({
-        error_message: `Not founded costumer ${id}.`,
+        error_message: `Not founded customer ${id}.`,
       });
     }
     res.json({
-      message: `Costumer ${id} updated.`,
+      message: `Customer ${id} updated.`,
     });
   } catch (err) {
     next(err);
   }
 };
 
-export const deleteCostumer = async (req, res, next) => {
+export const deleteCustomer = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const deletedCostumer = await Costumer.findByIdAndDelete(id);
-    if (!deletedCostumer) {
+    const deletedCustomer = await Customer.findByIdAndDelete(id);
+    if (!deletedCustomer) {
       return res.status(404).json({
-        error_message: `Not founded costumer ${id}.`,
+        error_message: `Not founded customer ${id}.`,
       });
     }
     res.json({
-      message: `Costumer ${id} was deleted.`,
+      message: `Customer ${id} was deleted.`,
     });
   } catch (err) {
     next(err);

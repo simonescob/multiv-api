@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-const costumerSchema = new Schema(
+const customerSchema = new Schema(
   {
     name: {
       type: String,
@@ -54,6 +54,6 @@ const costumerSchema = new Schema(
   }
 );
 
-costumerSchema.plugin(mongoosePaginate);
+customerSchema.plugin(mongoosePaginate);
 
-export default model('Costumer', costumerSchema);
+export default model('Customer', customerSchema);

@@ -5,7 +5,7 @@ import menusRoutes from './routes/menus.routes';
 import ordersRoutes from './routes/orders.routes';
 import plansRoutes from './routes/plans.routes';
 import usersRoutes from './routes/users.routes';
-import costumersRoutes from './routes/costumers.routes';
+import customersRoutes from './routes/customers.routes';
 //import morgan from 'morgan';
 
 import cors from 'cors';
@@ -35,7 +35,7 @@ app.use('/api/menus', menusRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/plans', plansRoutes);
 app.use('/api/users', usersRoutes);
-app.use('/api/costumers', costumersRoutes);
+app.use('/api/customers', customersRoutes);
 
 //Catch 404
 app.use(notFoundHandler);
