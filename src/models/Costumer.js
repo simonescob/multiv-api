@@ -1,0 +1,54 @@
+import { Schema, model } from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2';
+
+const costumerSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+    phone: {
+      type: String,
+      required: false,
+      trim: true,
+      maxlength: 16,
+    },
+    email: {
+      type: String,
+      required: false,
+      trim: true,
+      maxlength: 60,
+    },
+    avatar: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 200
+    },
+    address: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+    age: {
+      type: Number,
+      required: true,
+      maxlength: 3,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    versionKey: false,
+    timestamps: true,
+  }
+);
+
+costumerSchema.plugin(mongoosePaginate);
+
+export default model('Costumer', costumerSchema);

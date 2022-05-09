@@ -1,5 +1,4 @@
 import Order from '../models/Order';
-// import Ingredient from '../models/Ingredient';
 import { getPagination } from '../libs/getPagination';
 
 export const findAllOrders = async (req, res, next) => {
