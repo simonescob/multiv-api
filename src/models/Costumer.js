@@ -38,6 +38,11 @@ const costumerSchema = new Schema(
       required: true,
       maxlength: 3,
     },
+    cupons: {
+      type: Number,
+      required: true,
+      maxlength: 3,
+    },
     active: {
       type: Boolean,
       default: true,

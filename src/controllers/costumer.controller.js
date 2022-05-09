@@ -44,9 +44,10 @@ export const createCostumer = async (req, res, next) => {
       name: req.body.name,
       phone: req.body.phone,
       email: req.body.email,
-      avatar: req.body.imgUrl ? req.body.avatar : NO_AVATAR,
+      avatar: req.body.avatar ? req.body.avatar : NO_AVATAR,
       address: req.body.address,
       age: req.body.age,
+      cupons: req.body.cupons,
       active: req.body.active ? req.body.active : true,
     });
 
