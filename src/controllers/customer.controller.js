@@ -7,8 +7,8 @@ export const findAllCustomers = async (req, res, next) => {
 
     const condition = name
       ? {
-          name: { $regex: new RegExp(name), $options: 'i' },
-        }
+        name: { $regex: new RegExp(name), $options: 'i' },
+      }
       : {};
 
     const { limit, offset } = getPagination(page, size);
@@ -31,9 +31,16 @@ export const findAllCustomers = async (req, res, next) => {
 };
 
 export const createCustomer = async (req, res, next) => {
+
   if (!req.body.name) {
     return res.status(400).send({
       error_message: 'Customer name is required',
+    });
+  }
+
+  if (!req.body.lastname) {
+    return res.status(400).send({
+      error_message: 'Customer lastname is required',
     });
   }
 
@@ -42,6 +49,7 @@ export const createCustomer = async (req, res, next) => {
   try {
     const newCustomer = new Customer({
       name: req.body.name,
+      lastname: req.body.lastname,
       phone: req.body.phone,
       email: req.body.email,
       avatar: req.body.avatar ? req.body.avatar : NO_AVATAR,

@@ -9,15 +9,21 @@ const customerSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
+    lastname: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
     phone: {
       type: String,
-      required: false,
+      // required: false,
       trim: true,
       maxlength: 16,
     },
     email: {
       type: String,
-      required: false,
+      // required: false,
       trim: true,
       maxlength: 60,
     },
@@ -29,13 +35,13 @@ const customerSchema = new Schema(
     },
     address: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
       maxlength: 100,
     },
     age: {
       type: Number,
-      required: true,
+      // required: true,
       maxlength: 3,
     },
     cupons: {
