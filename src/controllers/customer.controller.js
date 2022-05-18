@@ -3,13 +3,21 @@ import { getPagination } from '../libs/getPagination';
 
 export const findAllCustomers = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query;
+    // const { size, page, name } = req.query;
+    const { size, page, name, inTrash = false } = req.query;
 
-    const condition = name
-      ? {
-        name: { $regex: new RegExp(name), $options: 'i' },
-      }
-      : {};
+    // const condition = name
+    //   ? {
+    //     name: { $regex: new RegExp(name), $options: 'i' },
+    //   }
+    //   : {};
+
+    const condition = { inTrash }
+
+    if (name) {
+      condition.name = { $regex: new RegExp(name), $options: 'i' }
+    }
+
 
     const { limit, offset } = getPagination(page, size);
 
@@ -57,6 +65,7 @@ export const createCustomer = async (req, res, next) => {
       age: req.body.age,
       cupons: req.body.cupons,
       active: req.body.active ? req.body.active : true,
+      inTrash: req.body.inTrash ? req.body.inTrash : false
     });
 
     await newCustomer
