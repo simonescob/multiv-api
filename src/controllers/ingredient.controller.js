@@ -3,17 +3,16 @@ import { getPagination } from '../libs/getPagination';
 
 export const findAllIngredients = async (req, res, next) => {
   try {
-    const { size, page, title, inTrash = false } = req.query;
+    const { size, page, name, inTrash = false } = req.query;
 
     const condition = { inTrash }
 
-    if (title) {
-      condition.title = { $regex: new RegExp(title), $options: 'i' }
+    if (name) {
+      condition.name = { $regex: new RegExp(name), $options: 'i' }
     }
 
-
     const { limit, offset } = getPagination(page, size);
-    const data = await Ingredient.paginate(condition, { offset, limit, title });
+    const data = await Ingredient.paginate(condition, { offset, limit, name });
 
 
     res.json({
@@ -31,15 +30,15 @@ export const findAllIngredients = async (req, res, next) => {
 };
 
 export const createIngredient = async (req, res, next) => {
-  if (!req.body.title) {
+  if (!req.body.name) {
     return res.status(400).send({
-      error_message: 'Ingredient title is required',
+      error_message: 'Ingredient name is required',
     });
   }
   const NO_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1024px-Imagen_no_disponible.svg.png'
   try {
     const newIngredient = new Ingredient({
-      title: req.body.title,
+      name: req.body.name,
       price: req.body.price,
       stock: req.body.stock,
       imgUrl: req.body.imgUrl ? req.body.imgUrl : NO_IMAGE,

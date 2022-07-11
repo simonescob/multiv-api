@@ -3,7 +3,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 const ingredientSchema = new Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true,
       trim: true,
@@ -11,7 +11,7 @@ const ingredientSchema = new Schema(
     },
     imgUrl: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
       maxlength: 200
     },

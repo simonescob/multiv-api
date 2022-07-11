@@ -7,11 +7,11 @@ import { getPagination } from '../libs/getPagination';
 
 export const findAllViandas = async (req, res, next) => {
   try {
-    const { size, page, title } = req.query;
+    const { size, page, name } = req.query;
 
-    const condition = title
+    const condition = name
       ? {
-        title: { $regex: new RegExp(title), $options: 'i' },
+        name: { $regex: new RegExp(name), $options: 'i' },
       }
       : {};
 
@@ -20,7 +20,7 @@ export const findAllViandas = async (req, res, next) => {
     const data = await Vianda.paginate(condition, {
       offset,
       limit,
-      title,
+      name,
       populate: 'ingredients',
     });
 
@@ -37,9 +37,9 @@ export const findAllViandas = async (req, res, next) => {
 
 export const createVianda = async (req, res, next) => {
 
-  if (!req.body.title) {
+  if (!req.body.name) {
     return res.status(400).send({
-      error_message: 'Vianda title is required',
+      error_message: 'Vianda name is required',
     });
   }
 
@@ -62,7 +62,7 @@ export const createVianda = async (req, res, next) => {
 
     // los que estan cargados
     const ingredientsObjectList = await Ingredient.find(
-      { title: { $in: ingredients } },
+      { name: { $in: ingredients } },
       async (err, data) => (data ? data : err)
     );
 
@@ -72,16 +72,16 @@ export const createVianda = async (req, res, next) => {
 
 
     //hago el array de titles que existen
-    const titlesIngredientsList = ingredientsObjectList.map(({ title }) => title);
+    const namesIngredientsList = ingredientsObjectList.map(({ name }) => name);
 
     //hago el array de los que no existen
-    const titlesNoExisten = ingredients.filter(
-      (el) => !titlesIngredientsList.includes(el)
+    const namesNoExisten = ingredients.filter(
+      (el) => !namesIngredientsList.includes(el)
     );
 
 
-    const newIngredients = titlesNoExisten.reduce((a, e) => {
-      a.push({ title: e });
+    const newIngredients = namesNoExisten.reduce((a, e) => {
+      a.push({ name: e });
       return a;
     }, []);
 
@@ -108,7 +108,7 @@ export const createVianda = async (req, res, next) => {
       .then((res) => {
 
         const newVianda = new Vianda({
-          title: req.body.title,
+          name: req.body.name,
           description: req.body.description,
           ingredients: res,
           active: req.body.active ? req.body.active : true,
