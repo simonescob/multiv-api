@@ -30,6 +30,9 @@ export const findAllIngredients = async (req, res, next) => {
 };
 
 export const createIngredient = async (req, res, next) => {
+
+  console.log(req.body)
+
   if (!req.body.name) {
     return res.status(400).send({
       error_message: 'Ingredient name is required',

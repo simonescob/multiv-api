@@ -8,8 +8,8 @@ export const findAllUsers = async (req, res, next) => {
 
     const condition = name
       ? {
-          name: { $regex: new RegExp(name), $options: 'i' },
-        }
+        name: { $regex: new RegExp(name), $options: 'i' },
+      }
       : {};
 
     const { limit, offset } = getPagination(page, size);
@@ -21,8 +21,13 @@ export const findAllUsers = async (req, res, next) => {
       populate: 'plan',
     });
 
+    const dataUsers = data.docs.map(user => {
+      user.password = undefined
+      return user
+    })
+
     res.json({
-      totalItems: data.totalDocs,
+      totalItems: dataUsers,
       users: data.docs,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
@@ -39,10 +44,19 @@ export const createUser = async (req, res, next) => {
     });
   }
 
+  if (!req.body.password) {
+    return res.status(400).send({
+      error_message: 'User password is required',
+    });
+  }
+
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
   try {
     const newUser = new User({
+      username: req.body.username,
       name: req.body.name,
+      lastname: req.body.lastname,
       phone: req.body.phone,
       email: req.body.email,
       password: hashedPassword,
@@ -58,6 +72,7 @@ export const createUser = async (req, res, next) => {
       .save()
       .then((result) => {
         console.log(`User with id ${result._id} was created.`);
+        result.password = undefined
         res.json({ result });
       })
       .catch((err) => {
@@ -83,6 +98,14 @@ export const findOneUser = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+export const findByUsername = async username => {
+  const user = await User.findOne({
+    username
+  });
+  return user;
+
 };
 
 export const findAllActiveUsers = async (req, res, next) => {

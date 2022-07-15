@@ -3,7 +3,19 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 const userSchema = new Schema(
   {
+    username: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
     name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+    lastname: {
       type: String,
       required: true,
       trim: true,
@@ -29,7 +41,7 @@ const userSchema = new Schema(
     },
     direction: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       maxlength: 100,
     },
