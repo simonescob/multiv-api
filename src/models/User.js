@@ -39,6 +39,12 @@ const userSchema = new Schema(
       trim: true,
       maxlength: 120,
     },
+    role: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 30,
+    },
     direction: {
       type: String,
       required: false,
@@ -55,14 +61,10 @@ const userSchema = new Schema(
     ],
     age: {
       type: Number,
-      required: true,
+      required: false,
       maxlength: 3,
     },
     medical: {
-      type: Boolean,
-      default: false,
-    },
-    isAdmin: {
       type: Boolean,
       default: false,
     },

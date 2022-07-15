@@ -5,3 +5,7 @@
 node_modules/
 dist/
 requests/
+pass-hash.js
+pass-verify.js
+token-sign.js
+token-verify.js

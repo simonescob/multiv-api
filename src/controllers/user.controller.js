@@ -50,6 +50,12 @@ export const createUser = async (req, res, next) => {
     });
   }
 
+  if (!req.body.role) {
+    return res.status(400).send({
+      error_message: 'User role is required',
+    });
+  }
+
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
   try {
@@ -59,12 +65,12 @@ export const createUser = async (req, res, next) => {
       lastname: req.body.lastname,
       phone: req.body.phone,
       email: req.body.email,
+      role: req.body.role,
       password: hashedPassword,
       direction: req.body.direction,
       location: req.body.location,
       age: req.body.age,
       medical: req.body.medical ? req.body.medical : false,
-      isAdmin: req.body.isAdmin ? req.body.isAdmin : false,
       active: req.body.active ? req.body.active : true,
     });
 
