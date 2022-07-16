@@ -27,8 +27,8 @@ export const findAllUsers = async (req, res, next) => {
     })
 
     res.json({
-      totalItems: dataUsers,
-      users: data.docs,
+      totalItems: data.totalDocs,
+      users: dataUsers,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
     });
