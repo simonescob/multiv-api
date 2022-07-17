@@ -43,9 +43,11 @@ export const createVianda = async (req, res, next) => {
     });
   }
 
-  if (!req.body.ingredients || !Array.isArray(req.body.ingredients)) {
+  if (!req.body.ingredients || 
+    !Array.isArray(req.body.ingredients) || 
+    !req.body.ingredients.length) {
     return res.status(400).send({
-      error_message: 'Vianda are required and need to be an array',
+      error_message: 'Vianda are required and need to be an array with data.',
     });
   }
 
@@ -56,13 +58,12 @@ export const createVianda = async (req, res, next) => {
   //   });
   // }
 
-
+  //check ingredients on ddbb
   const ingExs = await Ingredient.find({
     '_id': { $in: req.body.ingredients }
   });
 
   // console.log(ingExs)
-
 
   if (ingExs.length !== req.body.ingredients.length) {
     return res.status(400).send({

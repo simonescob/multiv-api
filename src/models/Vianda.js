@@ -19,6 +19,7 @@ const viandaSchema = new Schema(
       {
         _id: {
           type: Schema.Types.ObjectId,
+          ref: 'Ingredients',
           required: true,
           trim: true,
           maxlength: 100,
