@@ -1,5 +1,9 @@
 import Ingredient from '../models/Ingredient';
 import { getPagination } from '../libs/getPagination';
+import { storage, imageHandler } from '../middlewares/image.handler';
+
+
+export const uploadImg = imageHandler.single('image');
 
 export const findAllIngredients = async (req, res, next) => {
   try {
@@ -31,20 +35,26 @@ export const findAllIngredients = async (req, res, next) => {
 
 export const createIngredient = async (req, res, next) => {
 
-  console.log(req.body)
+  // console.log(req.body)
 
   if (!req.body.name) {
     return res.status(400).send({
       error_message: 'Ingredient name is required',
     });
   }
-  const NO_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1024px-Imagen_no_disponible.svg.png'
+  // const NO_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1024px-Imagen_no_disponible.svg.png'
   try {
     const newIngredient = new Ingredient({
       name: req.body.name,
       price: req.body.price,
       stock: req.body.stock,
-      imgUrl: req.body.imgUrl ? req.body.imgUrl : NO_IMAGE,
+      image: {
+        filename: req.file.filename ? req.file.filename : undefined,
+        filepath: req.file.filename ? '/public/uploads/' + req.file.filename : undefined,
+        mimetype: req.file.mimetype ? req.file.mimetype : undefined,
+        originalname: req.file.originalname ? req.file.originalname : undefined,
+        size: req.file.size ? req.file.size : undefined,
+    },
       active: req.body.active ? req.body.active : true,
       inTrash: req.body.inTrash ? req.body.inTrash : false
     });

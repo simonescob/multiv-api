@@ -9,12 +9,33 @@ const ingredientSchema = new Schema(
       trim: true,
       maxlength: 100
     },
-    imgUrl: {
-      type: String,
-      // required: true,
-      trim: true,
-      maxlength: 200
-    },
+    image: {
+      filename: {
+          type: String,
+          trim: true,
+          maxlength: 200
+      },
+      filepath: {
+          type: String,
+          trim: true,
+          maxlength: 200
+      },
+      mimetype: {
+          type: String,
+          trim: true,
+          maxlength: 200
+      },
+      originalname: {
+          type: String,
+          trim: true,
+          maxlength: 200
+      },
+      size: {
+          type: Number,
+          trim: true,
+          maxlength: 200
+      }
+  },
     active: {
       type: Boolean,
       default: true,

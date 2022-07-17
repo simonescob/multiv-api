@@ -1,4 +1,5 @@
 import express from 'express';
+import './database';
 import viandasRoutes from './routes/viandas.routes';
 import ingredientsRoutes from './routes/ingredients.routes';
 import menusRoutes from './routes/menus.routes';
@@ -45,6 +46,11 @@ app.use('/api/users',
 app.use('/api/customers', customersRoutes);
 app.use('/api/auth', authRoutes);
 
+
+//statics
+app.use('/api/public/uploads', express.static(__dirname + '/public/uploads'));
+
+
 //Catch 404
 app.use(notFoundHandler);
 
@@ -52,5 +58,6 @@ app.use(notFoundHandler);
 app.use(logErrors);
 app.use(wrapErrors);
 app.use(errorHandler);
+
 
 export default app;

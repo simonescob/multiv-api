@@ -3,8 +3,6 @@ import Ingredient from '../models/Ingredient';
 import { getPagination } from '../libs/getPagination';
 
 
-
-
 export const findAllViandas = async (req, res, next) => {
   try {
     const { size, page, name } = req.query;
