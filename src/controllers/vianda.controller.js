@@ -35,110 +35,168 @@ export const findAllViandas = async (req, res, next) => {
   }
 };
 
-export const createVianda = async (req, res, next) => {
 
+export const createVianda = async (req, res, next) => {
   if (!req.body.name) {
     return res.status(400).send({
       error_message: 'Vianda name is required',
     });
   }
 
-  if (!req.body.description) {
+  if (!req.body.ingredients || !Array.isArray(req.body.ingredients)) {
     return res.status(400).send({
-      error_message: 'Vianda description is required',
+      error_message: 'Vianda are required and need to be an array',
     });
   }
 
-  if (!req.body.ingredients) {
+  // console.log(ingExists) 
+  // if (ingExists) {
+  //   res.status(400).send({
+  //     error_message: 'Some ingredient not exists.',
+  //   });
+  // }
+
+
+  const ingExs = await Ingredient.find({
+    '_id': { $in: req.body.ingredients }
+  });
+
+  // console.log(ingExs)
+
+
+  if (ingExs.length !== req.body.ingredients.length) {
     return res.status(400).send({
-      error_message: 'Vianda ingredients is required',
+      error_message: 'Some ingredient not exists.',
     });
   }
 
-  //traigo ings
+
+
   try {
-    //los que tengo
-    const { ingredients } = req.body;
+    const newVianda = new Vianda({
+      name: req.body.name,
+      ingredients: req.body.ingredients,
+      description: req.body.description,
+      active: req.body.active ? req.body.active : true,
+    });
 
-    // los que estan cargados
-    const ingredientsObjectList = await Ingredient.find(
-      { name: { $in: ingredients } },
-      async (err, data) => (data ? data : err)
-    );
-
-
-    //hago el array de ids que existen
-    const idIngredientsList = ingredientsObjectList.map(({ _id }) => _id);
-
-
-    //hago el array de titles que existen
-    const namesIngredientsList = ingredientsObjectList.map(({ name }) => name);
-
-    //hago el array de los que no existen
-    const namesNoExisten = ingredients.filter(
-      (el) => !namesIngredientsList.includes(el)
-    );
-
-
-    const newIngredients = namesNoExisten.reduce((a, e) => {
-      a.push({ name: e });
-      return a;
-    }, []);
-
-    // console.log(newIngredients);
-
-    const newIngredientData = async (data) => {
-      try {
-        const allNewSavedIngredients = await Ingredient.insertMany(data);
-        return allNewSavedIngredients;
-      } catch (err) {
-        throw err;
-      }
-    };
-
-    newIngredientData(newIngredients)
-      .then((res) => {
-        const allIngredientsIds = res.reduce((a, el) => {
-          a.push(el._id);
-          return a;
-        }, idIngredientsList);
-
-        return allIngredientsIds;
-      })
-      .then((res) => {
-
-        const newVianda = new Vianda({
-          name: req.body.name,
-          description: req.body.description,
-          ingredients: res,
-          active: req.body.active ? req.body.active : true,
-        });
-
-        return newVianda;
-      })
-      .then((res) => res.save())
+    await newVianda
+      .save()
       .then((result) => {
-
-        console.log(`Se ha creado una vianda con id: ${result._id}`)
         res.json(result);
-
       })
-
-      .catch((e) => console.log(e));
-
-    // console.log(`Los ingresados por usuarios: ${names}`);
-    // console.log(`Los que ya estan cargados por nombre ${namesIngredientsList}`);
-    // console.log(`Los que no estan cargados por nombre ${namesNoExisten}`);
-    // console.log(`Prontos para cargar por id ${idIngredientsList}`);
-  } catch (err) {
-    next(err);
-  }
-
-  try {
+      .catch((err) => {
+        res.status(500).json({ err });
+      });
   } catch (err) {
     next(err);
   }
 };
+
+// export const createVianda = async (req, res, next) => {
+
+//   if (!req.body.name) {
+//     return res.status(400).send({
+//       error_message: 'Vianda name is required',
+//     });
+//   }
+
+//   if (!req.body.description) {
+//     return res.status(400).send({
+//       error_message: 'Vianda description is required',
+//     });
+//   }
+
+//   if (!req.body.ingredients) {
+//     return res.status(400).send({
+//       error_message: 'Vianda ingredients is required',
+//     });
+//   }
+
+//   //traigo ings
+//   try {
+//     //los que tengo
+//     const { ingredients } = req.body;
+
+//     // los que estan cargados
+//     const ingredientsObjectList = await Ingredient.find(
+//       { name: { $in: ingredients } },
+//       async (err, data) => (data ? data : err)
+//     );
+
+
+//     //hago el array de ids que existen
+//     const idIngredientsList = ingredientsObjectList.map(({ _id }) => _id);
+
+
+//     //hago el array de titles que existen
+//     const namesIngredientsList = ingredientsObjectList.map(({ name }) => name);
+
+//     //hago el array de los que no existen
+//     const namesNoExisten = ingredients.filter(
+//       (el) => !namesIngredientsList.includes(el)
+//     );
+
+
+//     const newIngredients = namesNoExisten.reduce((a, e) => {
+//       a.push({ name: e });
+//       return a;
+//     }, []);
+
+//     // console.log(newIngredients);
+
+//     const newIngredientData = async (data) => {
+//       try {
+//         const allNewSavedIngredients = await Ingredient.insertMany(data);
+//         return allNewSavedIngredients;
+//       } catch (err) {
+//         throw err;
+//       }
+//     };
+
+//     newIngredientData(newIngredients)
+//       .then((res) => {
+//         const allIngredientsIds = res.reduce((a, el) => {
+//           a.push(el._id);
+//           return a;
+//         }, idIngredientsList);
+
+//         return allIngredientsIds;
+//       })
+//       .then((res) => {
+
+//         const newVianda = new Vianda({
+//           name: req.body.name,
+//           description: req.body.description,
+//           ingredients: res,
+//           active: req.body.active ? req.body.active : true,
+//         });
+
+//         return newVianda;
+//       })
+//       .then((res) => res.save())
+//       .then((result) => {
+
+//         console.log(`Se ha creado una vianda con id: ${result._id}`)
+//         res.json(result);
+
+//       })
+
+//       .catch((e) => console.log(e));
+
+//     // console.log(`Los ingresados por usuarios: ${names}`);
+//     // console.log(`Los que ya estan cargados por nombre ${namesIngredientsList}`);
+//     // console.log(`Los que no estan cargados por nombre ${namesNoExisten}`);
+//     // console.log(`Prontos para cargar por id ${idIngredientsList}`);
+//   } catch (err) {
+//     next(err);
+//   }
+
+//   try {
+//   } catch (err) {
+//     next(err);
+//   }
+// };
 
 export const findOneVianda = async (req, res, next) => {
   const { id } = req.params;

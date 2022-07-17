@@ -6,15 +6,9 @@ import { checkRoles } from '../middlewares/auth.handler';
 
 const router = Router();
 
-router.post('/',
-    passport.authenticate('jwt', { session: false }),
-    checkRoles('admin'),
-    userController.createUser);
+router.post('/', userController.createUser);
 
-router.get('/',
-    passport.authenticate('jwt', { session: false }),
-    checkRoles('admin'),
-    userController.findAllUsers);
+router.get('/', userController.findAllUsers);
 
 router.get('/active', userController.findAllActiveUsers);
 

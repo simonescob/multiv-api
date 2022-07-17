@@ -9,24 +9,6 @@ const userSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
-    },
-    lastname: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
-    },
-    phone: {
-      type: String,
-      required: false,
-      trim: true,
-      maxlength: 16,
-    },
     email: {
       type: String,
       required: false,
@@ -44,38 +26,7 @@ const userSchema = new Schema(
       required: true,
       trim: true,
       maxlength: 30,
-    },
-    direction: {
-      type: String,
-      required: false,
-      trim: true,
-      maxlength: 100,
-    },
-    location: [
-      {
-        type: Number,
-      },
-      {
-        type: Number,
-      },
-    ],
-    age: {
-      type: Number,
-      required: false,
-      maxlength: 3,
-    },
-    medical: {
-      type: Boolean,
-      default: false,
-    },
-    plan: {
-      type: Schema.Types.ObjectId,
-      ref: 'Plan',
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
+    }
   },
   {
     versionKey: false,

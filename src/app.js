@@ -8,7 +8,8 @@ import usersRoutes from './routes/users.routes';
 import customersRoutes from './routes/customers.routes';
 import authRoutes from './routes/auth.routes';
 import morgan from 'morgan';
-import { checkApiKey } from './middlewares/auth.handler';
+import passport from 'passport';
+import { checkApiKey, checkRoles } from './middlewares/auth.handler';
 
 import cors from 'cors';
 import {
@@ -33,11 +34,14 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to multiv-api' });
 });
 app.use('/api/viandas', viandasRoutes);
-app.use('/api/ingredients', checkApiKey, ingredientsRoutes);
+app.use('/api/ingredients', ingredientsRoutes);
 app.use('/api/menus', menusRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/plans', plansRoutes);
-app.use('/api/users', usersRoutes);
+app.use('/api/users',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('admin'),
+  usersRoutes);
 app.use('/api/customers', customersRoutes);
 app.use('/api/auth', authRoutes);
 
