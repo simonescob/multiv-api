@@ -72,6 +72,9 @@ export const createUser = async (req, res, next) => {
     });
   }
 
+  // console.log(existingEmail)
+  // debugger
+  
   if(existingEmail) {
     return res.status(400).send({
       error_message: 'Email ready exists',
@@ -132,7 +135,7 @@ export const findByEmail = async email => {
   const user = await User.findOne({
     email
   });
-  return email;
+  return user;
 };
 
 export const findAllActiveUsers = async (req, res, next) => {

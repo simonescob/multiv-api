@@ -17,13 +17,11 @@ const customerSchema = new Schema(
     },
     phone: {
       type: String,
-      // required: false,
       trim: true,
       maxlength: 16,
     },
     email: {
       type: String,
-      // required: false,
       trim: true,
       maxlength: 60,
     },
@@ -35,13 +33,11 @@ const customerSchema = new Schema(
     },
     address: {
       type: String,
-      // required: true,
       trim: true,
       maxlength: 100,
     },
     age: {
       type: Number,
-      // required: true,
       maxlength: 3,
     },
     cupons: {
