@@ -10,8 +10,8 @@ export const handleLogin = async (req, res, next) => {
     // res.json('is ok logueado papi')
 
     try {
-        const user = req.user
-        console.log(user)
+        let user = req.user
+        // console.log(user)
         const payload = {
             sub: user._id,
             role: user.role
@@ -29,11 +29,17 @@ export const handleLogin = async (req, res, next) => {
             { expiresIn: '1d' }
         )
 
-        const userToUpdate = new User.findOne({
-            username: user
-        })
+        //guardo en bbdd el refresh token 
+        const userUpdated = await User.findByIdAndUpdate(user._id, { refreshToken }).exec()
+   
+        if (!userUpdated) {
+            return res.status(404).json({
+                error_message: `The refresh token cant be saved to ${user._id} user.`,
+            });
+        }
 
-        console.log(userToUpdate)
+        // console.log(userToUpdate)
+        // console.log('hasta aca  ')
 
 
         res.json({

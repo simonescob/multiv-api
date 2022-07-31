@@ -151,6 +151,8 @@ export const updateUser = async (req, res, next) => {
   const id = req.params.id;
   try {
     const updatedUser = await User.findByIdAndUpdate(id, req.body);
+    
+    // console.log(typeof req + " esto req")
 
     if (!updatedUser) {
       return res.status(404).json({
