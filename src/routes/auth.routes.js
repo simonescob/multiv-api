@@ -8,6 +8,16 @@ router.post(
     '/login',
     passport.authenticate('local', { session: false }),
     authController.handleLogin
-    );
+);
+
+router.get(
+    '/refresh',
+    authController.handleRefreshToken
+);
+
+router.get(
+    '/logout',
+    authController.handleLogout
+);
 
 export default router;

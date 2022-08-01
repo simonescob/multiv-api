@@ -71,17 +71,12 @@ export const createUser = async (req, res, next) => {
       error_message: 'Username ready exists',
     });
   }
-
-  // console.log(existingEmail)
-  // debugger
   
   if(existingEmail) {
     return res.status(400).send({
       error_message: 'Email ready exists',
     });
   }
-
-
 
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
@@ -96,7 +91,7 @@ export const createUser = async (req, res, next) => {
     await newUser
       .save()
       .then((result) => {
-        result.password = undefined
+        result.password ? result.password = undefined : null
         console.log(`User with id ${result._id} was created.`);
         res.json({ result });
       })
@@ -119,6 +114,8 @@ export const findOneUser = async (req, res, next) => {
       });
     }
 
+    user.password ? user.password = undefined : null
+    
     res.json(user);
   } catch (err) {
     next(err);

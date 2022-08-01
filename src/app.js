@@ -10,7 +10,8 @@ import customersRoutes from './routes/customers.routes';
 import authRoutes from './routes/auth.routes';
 import morgan from 'morgan';
 import passport from 'passport';
-import { checkRoles } from './middlewares/auth.handler';
+import { checkRoles, verifyJwt } from './middlewares/auth.handler';
+import cookieParser from 'cookie-parser';
 
 import cors from 'cors';
 import {
@@ -29,27 +30,35 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 require('./utils/auth')
+//for cookies
+app.use(cookieParser())
+
+//statics
+app.use('/api/public/uploads', express.static(__dirname + '/public/uploads'));
+
 
 //routes
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to multiv-api' });
 });
 app.use('/api/viandas', viandasRoutes);
-app.use('/api/ingredients', ingredientsRoutes);
 app.use('/api/menus', menusRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/plans', plansRoutes);
-// app.use('/api/users',
-//   passport.authenticate('jwt', { session: false }),
-//   checkRoles('admin'),
-//   usersRoutes);
+app.use('/api/users',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('admin'),
+  usersRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/customers', customersRoutes);
 app.use('/api/auth', authRoutes);
 
 
-//statics
-app.use('/api/public/uploads', express.static(__dirname + '/public/uploads'));
+//auth routes
+// app.use(verifyJwt);
+app.use('/api/ingredients', ingredientsRoutes);
+
+
 
 
 //Catch 404

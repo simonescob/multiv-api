@@ -34,4 +34,28 @@ export const checkRoles = (...roles) => {
 }
 
 
+export const verifyJwt = (req, res, next) => {
+    
+    const authHeader = req.headers.cookie
+
+    console.log(authHeader)
+
+    if(!authHeader) return next(boom.unauthorized())
+    
+    const token = authHeader.split(' ')[1]
+
+    jwt.verify(
+        token, 
+        config.accessTokenSecret,
+        (error, decoded) => {
+
+            if(error) return next(boom.forbidden())          
+
+            next()
+        }
+    ) 
+
+
+}
+
 
