@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as userController from '../controllers/user.controller';
-const passport = require('passport');
-import { checkRoles } from '../middlewares/auth.handler';
+// const passport = rkequire('passport');
+// import { checkRoles } from '../middlewares/auth.handler';
 
 
 const router = Router();

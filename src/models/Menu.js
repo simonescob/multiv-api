@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+import { Schema, model } from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const menuSchema = new Schema(
   {
@@ -15,10 +15,10 @@ const menuSchema = new Schema(
       trim: true,
       maxlenght: 100,
     },
-    viandas: [
+    products: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Vianda',
+        ref: 'Product',
       },
     ],
     active: {
@@ -30,8 +30,8 @@ const menuSchema = new Schema(
     versionKey: false,
     timestamps: true,
   }
-);
+)
 
-menuSchema.plugin(mongoosePaginate);
+menuSchema.plugin(mongoosePaginate)
 
-export default model('Menu', menuSchema);
+export default model('Menu', menuSchema)

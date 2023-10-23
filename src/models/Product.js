@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-const viandaSchema = new Schema(
+const productSchema = new Schema(
   {
     name: {
       type: String,
@@ -14,6 +14,12 @@ const viandaSchema = new Schema(
       required: true,
       trim: true,
       maxlength: 100,
+    },
+    price: {
+      type: Number,
+      required: true,
+      trim: true,
+      maxlength: 60,
     },
     ingredients: [
       {
@@ -43,6 +49,6 @@ const viandaSchema = new Schema(
   }
 );
 
-viandaSchema.plugin(mongoosePaginate);
+productSchema.plugin(mongoosePaginate);
 
-export default model('Vianda', viandaSchema);
+export default model('Product', productSchema);

@@ -3,9 +3,9 @@ import * as menuController from '../controllers/menu.controller';
 
 const router = Router();
 
-router.post('/', menuController.createMenu);
-
 router.get('/', menuController.findAllMenus);
+
+router.post('/', menuController.createMenu);
 
 router.get('/active', menuController.findAllActiveMenus);
 

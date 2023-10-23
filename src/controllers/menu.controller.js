@@ -1,150 +1,149 @@
-import Menu from '../models/Menu';
-import Vianda from '../models/Vianda';
-import { getPagination } from '../libs/getPagination';
+import Menu from '../models/Menu'
+import Product from '../models/Product'
+import { getPagination } from '../libs/getPagination'
 
 export const findAllMenus = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query;
+    const { size, page, name } = req.query
 
     const condition = name
       ? {
           name: { $regex: new RegExp(name), $options: 'i' },
         }
-      : {};
+      : {}
 
-    const { limit, offset } = getPagination(page, size);
+    const { limit, offset } = getPagination(page, size)
 
     const data = await Menu.paginate(condition, {
       offset,
       limit,
       name,
-      populate: 'viandas',
-    });
+      populate: 'products',
+    })
 
     res.json({
       totalItems: data.totalDocs,
       menus: data.docs,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
-    });
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 export const createMenu = async (req, res, next) => {
   if (!req.body.name) {
     return res.status(400).send({
       error_message: 'Menu name is required',
-    });
+    })
   }
 
   if (!req.body.description) {
     return res.status(400).send({
       error_message: 'Menu description is required',
-    });
+    })
   }
 
-  if (!req.body.viandas) {
+  if (!req.body.products) {
     return res.status(400).send({
-      error_message: 'Menu viandas is required',
-    });
+      error_message: 'Menu products is required',
+    })
+  }
+
+  // check ingredients on ddbb
+  const productExist = await Product.find({
+    _id: { $in: req.body.products },
+  })
+
+  // console.log(ingExs)
+
+  if (productExist.length !== req.body.products.length) {
+    return res.status(400).send({
+      error_message: 'Some products not exists.',
+    })
   }
 
   try {
     const newMenu = new Menu({
       name: req.body.name,
       description: req.body.description,
-      viandas: req.body.viandas,
+      products: req.body.products,
       active: req.body.active ? req.body.active : true,
-    });
+    })
 
-    const viandas = Array();
-
-    newMenu.viandas.map((vianda) => {
-      viandas.push(vianda);
-    });
-
-    Vianda.find({ _id: { $in: viandas } }, async (err, data) => {
-      if (viandas.length === viandas.length) {
-        await newMenu
-          .save()
-          .then((result) => {
-            console.log(`Menu with id ${result._id} was created.`);
-            res.json({ result });
-          })
-          .catch((err) => {
-            // res.status(500).json({ err });
-            throw err;
-          });
-      } else {
-        return res.status(500).send({
-          error_message: `Alguna vianda es inexistente. Error: ${err}`,
-        });
-      }
-    });
+    await newMenu
+      .save()
+      .then((result) => {
+        console.log(`Menu with id ${result._id} was created.`)
+        res.json({ result })
+      })
+      .catch((err) => {
+        // res.status(500).json({ err });
+        res.status(500).json({ err })
+      })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 export const findOneMenu = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.params
 
   try {
-    const menu = await Menu.findById(id);
+    const menu = await Menu.findById(id)
     if (!menu) {
       return res.status(404).json({
         error_message: `The menu with id ${id} does not exists.`,
-      });
+      })
     }
 
-    res.json(menu);
+    res.json(menu)
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 export const findAllActiveMenus = async (req, res, next) => {
   try {
-    const activeMenus = await Menu.find({ active: true }).populate('viandas');
-    res.json({ activeMenus });
+    const activeMenus = await Menu.find({ active: true }).populate('products')
+    res.json({ activeMenus })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 export const updateMenu = async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.params.id
   try {
-    const updatedMenu = await Menu.findByIdAndUpdate(id, req.body);
+    const updatedMenu = await Menu.findByIdAndUpdate(id, req.body)
 
     if (!updatedMenu) {
       return res.status(404).json({
         error_message: `The menu with id: ${id} does not exists.`,
-      });
+      })
     }
     res.json({
       message: `Menu ${id} updated.`,
-    });
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 export const deleteMenu = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.params
   try {
-    const deletedMenu = await Menu.findByIdAndDelete(id);
+    const deletedMenu = await Menu.findByIdAndDelete(id)
     if (!deletedMenu) {
       return res.status(404).json({
         error_message: `The menu with id: ${id} does not exists.`,
-      });
+      })
     }
     res.json({
       message: `Menu with id: ${id} was deleted.`,
-    });
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}

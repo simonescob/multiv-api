@@ -1,7 +1,7 @@
-import { Schema, model } from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+import { Schema, model } from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
-const orderSchema = new Schema(
+const deliveryOrderSchema = new Schema(
   {
     name: {
       type: String,
@@ -13,9 +13,9 @@ const orderSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    vianda: {
+    product: {
       type: Schema.Types.ObjectId,
-      ref: 'Vianda',
+      ref: 'Product',
     },
     comments: {
       type: String,
@@ -39,8 +39,8 @@ const orderSchema = new Schema(
     versionKey: false,
     timestamps: true,
   }
-);
+)
 
-orderSchema.plugin(mongoosePaginate);
+deliveryOrderSchema.plugin(mongoosePaginate)
 
-export default model('Order', orderSchema);
+export default model('DeliveryOrder', deliveryOrderSchema)

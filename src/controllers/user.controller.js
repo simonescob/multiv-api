@@ -49,11 +49,11 @@ export const createUser = async (req, res, next) => {
     });
   }
 
-  if (!req.body.role) {
-    return res.status(400).send({
-      error_message: 'User role is required',
-    });
-  }
+  // if (!req.body.role) {
+  //   return res.status(400).send({
+  //     error_message: 'User role is required',
+  //   });
+  // }
 
   if (!req.body.email) {
     return res.status(400).send({
@@ -61,7 +61,7 @@ export const createUser = async (req, res, next) => {
     });
   }
 
-  //check if username or email exists
+  // check if username or email exists
 
   const existingUsername = await findByUsername(req.body.username)
   const existingEmail = await findByEmail(req.body.email)
@@ -91,7 +91,7 @@ export const createUser = async (req, res, next) => {
     await newUser
       .save()
       .then((result) => {
-        result.password ? result.password = undefined : null
+        result.password = undefined
         console.log(`User with id ${result._id} was created.`);
         res.json({ result });
       })
@@ -114,7 +114,7 @@ export const findOneUser = async (req, res, next) => {
       });
     }
 
-    user.password ? user.password = undefined : null
+    user.password = undefined
     
     res.json(user);
   } catch (err) {
@@ -149,7 +149,6 @@ export const updateUser = async (req, res, next) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(id, req.body);
     
-    // console.log(typeof req + " esto req")
 
     if (!updatedUser) {
       return res.status(404).json({

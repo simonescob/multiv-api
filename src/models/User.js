@@ -11,7 +11,7 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      required: false,
+      required: true,
       trim: true,
       maxlength: 60,
     },
@@ -26,11 +26,7 @@ const userSchema = new Schema(
       required: true,
       trim: true,
       maxlength: 30,
-    },
-    refreshToken: {
-      type: String,
-      trim: true,
-      maxlength: 60,
+      default: "client"
     }
   },
   {
