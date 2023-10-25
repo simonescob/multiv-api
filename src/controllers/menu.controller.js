@@ -1,6 +1,7 @@
 import Menu from '../models/Menu'
 import Product from '../models/Product'
 import { getPagination } from '../libs/getPagination'
+import { setCounter } from '../libs/setCounter'
 import mongoose from 'mongoose'
 
 export const findAllMenus = async (req, res, next) => {
@@ -21,7 +22,7 @@ export const findAllMenus = async (req, res, next) => {
       name,
       populate: {
         path: 'products',
-        select: 'name _id active price', // Especifica los campos que deseas poblar del documento 'product'
+        select: 'name _id productNum active price', // Especifica los campos que deseas poblar del documento 'product'
       },
     })
 
@@ -64,7 +65,10 @@ export const createMenu = async (req, res, next) => {
   }
 
   try {
+    const count = await setCounter('Menu')
+
     const newMenu = new Menu({
+      menuNum: count,
       name: req.body.name,
       comments: req.body.comments,
       products: req.body.products,
@@ -92,7 +96,7 @@ export const findOneMenu = async (req, res, next) => {
   try {
     const menu = await Menu.findById(id).populate({
       path: 'products',
-      select: 'name _id active price',
+      select: 'name _id productNum active price',
     })
 
     if (!menu) {

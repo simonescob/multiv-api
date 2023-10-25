@@ -3,6 +3,12 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 
 const productSchema = new Schema(
   {
+    productNum: {
+      type: Number,
+      required: true,
+      trim: true,
+      maxlength: 10,
+    },
     name: {
       type: String,
       required: true,

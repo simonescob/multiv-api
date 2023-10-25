@@ -1,14 +1,14 @@
-import { Schema, model } from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+import { Schema, model } from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const orderSchema = new Schema(
   {
-    // idNum: {
-    //     type: Number,
-    //     required: true,
-    //     trim: true,
-    //     maxlength: 20,
-    //   },
+    orderNum: {
+      type: Number,
+      required: true,
+      trim: true,
+      maxlength: 10,
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -18,11 +18,11 @@ const orderSchema = new Schema(
       ref: 'Product',
     },
     price: {
-        type: Number,
-        required: true,
-        trim: true,
-        maxlength: 60,
-      },
+      type: Number,
+      required: true,
+      trim: true,
+      maxlength: 60,
+    },
     comments: {
       type: String,
       required: false,
@@ -38,8 +38,8 @@ const orderSchema = new Schema(
     versionKey: false,
     timestamps: true,
   }
-);
+)
 
-orderSchema.plugin(mongoosePaginate);
+orderSchema.plugin(mongoosePaginate)
 
-export default model('Order', orderSchema);
+export default model('Order', orderSchema)

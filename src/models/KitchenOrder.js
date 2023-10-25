@@ -3,11 +3,11 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 
 const kitchenOrderSchema = new Schema(
   {
-    name: {
-      type: String,
+    orderNum: {
+      type: Number,
       required: true,
       trim: true,
-      maxlength: 100,
+      maxlength: 10,
     },
     orders: [
       {

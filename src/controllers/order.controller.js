@@ -1,5 +1,7 @@
 import Order from '../models/Order'
+// import Counter from '../models/Counter'
 import { getPagination } from '../libs/getPagination'
+import { setCounter } from '../libs/setCounter'
 
 export const findAllOrders = async (req, res, next) => {
   try {
@@ -21,7 +23,7 @@ export const findAllOrders = async (req, res, next) => {
       populate: [
         {
           path: 'product',
-          select: 'name _id active price',
+          select: 'name _id productNum active price',
         },
         {
           path: 'user',
@@ -64,7 +66,9 @@ export const createOrder = async (req, res, next) => {
 
   // quiero guardar una orden
   try {
+    const count = await setCounter('Order')
     const newOrder = new Order({
+      orderNum: count,
       user: req.body.user,
       product: req.body.product,
       price: req.body.price,
@@ -78,7 +82,7 @@ export const createOrder = async (req, res, next) => {
         res.json({ result })
       })
       .catch((err) => {
-        throw err
+        console.error(err)
       })
   } catch (err) {
     next(err)
@@ -92,7 +96,7 @@ export const findOneOrder = async (req, res, next) => {
     const order = await Order.findById(id)
       .populate({
         path: 'product',
-        select: 'name _id active', // Poblar solo los campos 'name' y '_id' del documento 'product'
+        select: 'name _id productNum active', // Poblar solo los campos 'name' y '_id' del documento 'product'
       })
       .populate({
         path: 'user',

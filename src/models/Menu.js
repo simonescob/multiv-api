@@ -3,6 +3,12 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 
 const menuSchema = new Schema(
   {
+    menuNum: {
+      type: Number,
+      required: true,
+      trim: true,
+      maxlength: 10,
+    },
     name: {
       type: String,
       require: true,

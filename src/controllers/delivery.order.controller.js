@@ -1,6 +1,8 @@
 import DeliveryOrder from '../models/DeliveryOrder'
 import Order from '../models/Order'
 import { getPagination } from '../libs/getPagination'
+import { setCounter } from '../libs/setCounter'
+
 import mongoose from 'mongoose'
 
 export const findAllDeliveryOrders = async (req, res, next) => {
@@ -22,7 +24,7 @@ export const findAllDeliveryOrders = async (req, res, next) => {
       populate: [
         {
           path: 'orders',
-          select: 'user _id active price comments',
+          select: 'user orderNum _id active price comments',
         },
         {
           path: 'user',
@@ -76,7 +78,10 @@ export const createDeliveryOrder = async (req, res, next) => {
 
   // quiero guardar una orden
   try {
+    const count = await setCounter('DeliveryOrder')
+
     const newDeliveryOrder = new DeliveryOrder({
+      orderNum: count,
       name: req.body.name,
       user: req.body.user,
       orders: req.body.orders,
@@ -106,7 +111,7 @@ export const findOneDeliveryOrder = async (req, res, next) => {
     const order = await DeliveryOrder.findById(id)
       .populate({
         path: 'orders',
-        select: 'user _id active price comments',
+        select: 'user _id orderNum active price comments',
       })
       .populate({
         path: 'user',

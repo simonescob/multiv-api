@@ -1,6 +1,7 @@
 import Product from '../models/Product'
 import Ingredient from '../models/Ingredient'
 import { getPagination } from '../libs/getPagination'
+import { setCounter } from '../libs/setCounter'
 import mongoose from 'mongoose'
 
 export const findAllProducts = async (req, res, next) => {
@@ -73,7 +74,10 @@ export const createProduct = async (req, res, next) => {
   }))
 
   try {
+    const count = await setCounter('Product')
+
     const newProduct = new Product({
+      productNum: count,
       name: req.body.name,
       ingredients: arrayIngredients,
       price: req.body.price,

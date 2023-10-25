@@ -1,6 +1,8 @@
 import KitchenOrder from '../models/KitchenOrder'
 import Order from '../models/Order'
 import { getPagination } from '../libs/getPagination'
+import { setCounter } from '../libs/setCounter'
+
 import mongoose from 'mongoose'
 
 export const findAllKitchenOrders = async (req, res, next) => {
@@ -22,7 +24,7 @@ export const findAllKitchenOrders = async (req, res, next) => {
       populate: [
         {
           path: 'orders',
-          select: 'user _id active price comments',
+          select: 'user _id orderNum active price comments',
         },
       ],
     })
@@ -65,7 +67,10 @@ export const createKitchenOrder = async (req, res, next) => {
 
   // quiero guardar una orden
   try {
+    const count = await setCounter('KitchenOrder')
+
     const newOrder = new KitchenOrder({
+      orderNum: count,
       name: req.body.name,
       orders: req.body.orders,
       comments: req.body.comments,
@@ -93,7 +98,7 @@ export const findOneKitchenOrder = async (req, res, next) => {
   try {
     const order = await KitchenOrder.findById(id).populate({
       path: 'orders',
-      select: 'user _id active price comments',
+      select: 'user _id active orderNum price comments',
     })
     if (!order) {
       return res.status(404).json({
