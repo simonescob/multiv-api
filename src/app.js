@@ -9,6 +9,7 @@ import usersRoutes from './routes/users.routes'
 import profilesRoutes from './routes/profiles.routes'
 import authRoutes from './routes/auth.routes'
 import morgan from 'morgan'
+import ordersRoutes from './routes/orders.routes';
 import cookieParser from 'cookie-parser'
 
 import cors from 'cors'
@@ -37,6 +38,7 @@ app.get('/api', (req, res) => {
 app.use('/api/ingredients', ingredientsRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/menus', menusRoutes)
+app.use('/api/orders', ordersRoutes);
 app.use('/api/kitchen/orders', kitchenOrdersRoutes)
 app.use('/api/delivery/orders', deliveryOrdersRoutes)
 // app.use('/api/users',

@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+import { Schema, model } from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const productSchema = new Schema(
   {
@@ -23,20 +23,17 @@ const productSchema = new Schema(
     },
     ingredients: [
       {
-        _id: {
+        ingredient: {
           type: Schema.Types.ObjectId,
-          ref: 'Ingredients',
-          required: true,
-          trim: true,
-          maxlength: 100,
+          ref: 'Ingredient',
         },
         gms: {
           type: Number,
           required: true,
           trim: true,
           maxlength: 8,
-        }
-      }
+        },
+      },
     ],
     active: {
       type: Boolean,
@@ -47,8 +44,8 @@ const productSchema = new Schema(
     versionKey: false,
     timestamps: true,
   }
-);
+)
 
-productSchema.plugin(mongoosePaginate);
+productSchema.plugin(mongoosePaginate)
 
-export default model('Product', productSchema);
+export default model('Product', productSchema)

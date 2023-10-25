@@ -110,7 +110,7 @@ export const findOneUser = async (req, res, next) => {
     const user = await User.findById(id).populate('plan');
     if (!user) {
       return res.status(404).json({
-        error_message: `The user with id ${id} does not exists.`,
+        error_message: `User with id ${id} does not exists.`,
       });
     }
 

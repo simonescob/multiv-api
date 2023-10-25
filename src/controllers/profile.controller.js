@@ -17,7 +17,12 @@ export const findAllProfiles = async (req, res, next) => {
     const data = await Profile.paginate(condition, {
       offset,
       limit,
-      name
+      name,
+      populate: [{
+        path: 'user',
+        select: 'username _id role', // Especifica los campos que deseas poblar del documento 'user'
+      }]
+
     });
 
   
@@ -94,7 +99,10 @@ export const findOneProfile = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const user = await Profile.findById(id).populate('plan');
+    const user = await Profile.findById(id).populate({
+      path: 'user',
+      select: 'username _id role' // Poblar solo los campos 'name' y '_id' del documento 'product'
+    });
     if (!user) {
       return res.status(404).json({
         error_message: `The user with id ${id} does not exists.`,

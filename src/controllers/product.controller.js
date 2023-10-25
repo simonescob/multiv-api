@@ -1,6 +1,7 @@
 import Product from '../models/Product'
 import Ingredient from '../models/Ingredient'
 import { getPagination } from '../libs/getPagination'
+import mongoose from 'mongoose'
 
 export const findAllProducts = async (req, res, next) => {
   try {
@@ -52,22 +53,29 @@ export const createProduct = async (req, res, next) => {
   }
 
   // check ingredients on ddbb
-  const ingExs = await Ingredient.find({
-    _id: { $in: req.body.ingredients },
-  })
 
-  // console.log(ingExs)
+  const ingredientIds = req.body.ingredients.map((item) => item.ingredient)
+
+  const validIngredientIds = ingredientIds.filter((id) => mongoose.Types.ObjectId.isValid(id))
+
+  const ingExs = await Ingredient.find({
+    _id: { $in: validIngredientIds },
+  })
 
   if (ingExs.length !== req.body.ingredients.length) {
     return res.status(400).send({
       error_message: 'Some ingredient not exists.',
     })
   }
+  const arrayIngredients = req.body.ingredients.map((ing) => ({
+    _id: ing.ingredient,
+    gms: ing.gms,
+  }))
 
   try {
     const newProduct = new Product({
       name: req.body.name,
-      ingredients: req.body.ingredients,
+      ingredients: arrayIngredients,
       price: req.body.price,
       description: req.body.description,
       active: req.body.active ? req.body.active : true,
@@ -140,7 +148,7 @@ export const deleteProduct = async (req, res, next) => {
       })
     }
     res.json({
-      message: `Product with id: ${id} was deleted.`,
+      message: `Product with id ${id} was deleted.`,
     })
   } catch (err) {
     next(err)
