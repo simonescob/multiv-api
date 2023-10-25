@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+import { Schema, model } from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const userSchema = new Schema(
   {
@@ -15,7 +15,7 @@ const userSchema = new Schema(
       trim: true,
       maxlength: 60,
     },
-    password: {
+    hashedPassword: {
       type: String,
       required: true,
       trim: true,
@@ -26,15 +26,15 @@ const userSchema = new Schema(
       required: true,
       trim: true,
       maxlength: 30,
-      default: "client"
-    }
+      default: 'client',
+    },
   },
   {
     versionKey: false,
     timestamps: true,
   }
-);
+)
 
-userSchema.plugin(mongoosePaginate);
+userSchema.plugin(mongoosePaginate)
 
-export default model('User', userSchema);
+export default model('User', userSchema)

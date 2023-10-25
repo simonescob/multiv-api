@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import passport from 'passport'
+// import passport from 'passport'
 import boom from '@hapi/boom'
 import { config } from '../config'
 
@@ -21,41 +21,29 @@ import { config } from '../config'
 //     }
 // }
 
-
 export const checkRoles = (...roles) => {
-    return (req, res, next) => {
-        const user = req.user
-        if (roles.includes(user.role)) {
-            next()
-        } else {
-            next(boom.unauthorized())
-        }
+  return (req, res, next) => {
+    const user = req.user
+    if (roles.includes(user.role)) {
+      next()
+    } else {
+      next(boom.unauthorized())
     }
+  }
 }
-
 
 export const verifyJwt = (req, res, next) => {
-    
-    const authHeader = req.headers.cookie
+  const authHeader = req.headers.cookie
 
-    console.log(authHeader)
+  console.log(authHeader)
 
-    if(!authHeader) return next(boom.unauthorized())
-    
-    const token = authHeader.split(' ')[1]
+  if (!authHeader) return next(boom.unauthorized())
 
-    jwt.verify(
-        token, 
-        config.accessTokenSecret,
-        (error, decoded) => {
+  const token = authHeader.split(' ')[1]
 
-            if(error) return next(boom.forbidden())          
+  jwt.verify(token, config.accessTokenSecret, (error, decoded) => {
+    if (error) return next(boom.forbidden())
 
-            next()
-        }
-    ) 
-
-
+    next()
+  })
 }
-
-

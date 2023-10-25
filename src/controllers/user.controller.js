@@ -1,27 +1,27 @@
-import User from '../models/User';
-import bcrypt from 'bcrypt';
-import { getPagination } from '../libs/getPagination';
+import User from '../models/User'
+import bcrypt from 'bcrypt'
+import { getPagination } from '../libs/getPagination'
 
 export const findAllUsers = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query;
+    const { size, page, name } = req.query
 
     const condition = name
       ? {
-        name: { $regex: new RegExp(name), $options: 'i' },
-      }
-      : {};
+          name: { $regex: new RegExp(name), $options: 'i' },
+        }
+      : {}
 
-    const { limit, offset } = getPagination(page, size);
+    const { limit, offset } = getPagination(page, size)
 
     const data = await User.paginate(condition, {
       offset,
       limit,
-      name
-    });
+      name,
+    })
 
-    const dataUsers = data.docs.map(user => {
-      user.password = undefined
+    const dataUsers = data.docs.map((user) => {
+      user.hashedPassword = undefined
       return user
     })
 
@@ -30,23 +30,23 @@ export const findAllUsers = async (req, res, next) => {
       users: dataUsers,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
-    });
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 export const createUser = async (req, res, next) => {
   if (!req.body.username) {
     return res.status(400).send({
       error_message: 'User name is required',
-    });
+    })
   }
 
   if (!req.body.password) {
     return res.status(400).send({
       error_message: 'User password is required',
-    });
+    })
   }
 
   // if (!req.body.role) {
@@ -58,7 +58,7 @@ export const createUser = async (req, res, next) => {
   if (!req.body.email) {
     return res.status(400).send({
       error_message: 'User email is required',
-    });
+    })
   }
 
   // check if username or email exists
@@ -66,116 +66,115 @@ export const createUser = async (req, res, next) => {
   const existingUsername = await findByUsername(req.body.username)
   const existingEmail = await findByEmail(req.body.email)
 
-  if(existingUsername) {
+  if (existingUsername) {
     return res.status(400).send({
       error_message: 'Username ready exists',
-    });
-  }
-  
-  if(existingEmail) {
-    return res.status(400).send({
-      error_message: 'Email ready exists',
-    });
+    })
   }
 
-  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  if (existingEmail) {
+    return res.status(400).send({
+      error_message: 'Email ready exists',
+    })
+  }
+
+  const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
   try {
     const newUser = new User({
       username: req.body.username,
       email: req.body.email,
       role: req.body.role,
-      password: hashedPassword
-    });
+      hashedPassword,
+    })
 
     await newUser
       .save()
       .then((result) => {
-        result.password = undefined
-        console.log(`User with id ${result._id} was created.`);
-        res.json({ result });
+        result.hashedPassword = undefined
+        console.log(`User with id ${result._id} was created.`)
+        res.json({ result })
       })
       .catch((err) => {
-        throw err;
-      });
+        throw err
+      })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 export const findOneUser = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.params
 
   try {
-    const user = await User.findById(id).populate('plan');
+    const user = await User.findById(id)
     if (!user) {
       return res.status(404).json({
         error_message: `User with id ${id} does not exists.`,
-      });
+      })
     }
 
-    user.password = undefined
-    
-    res.json(user);
-  } catch (err) {
-    next(err);
-  }
-};
+    user.hashedPassword = undefined
 
-export const findByUsername = async username => {
+    res.json(user)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const findByUsername = async (username) => {
   const user = await User.findOne({
-    username
-  });
-  return user;
-};
-export const findByEmail = async email => {
+    username,
+  })
+  return user
+}
+export const findByEmail = async (email) => {
   const user = await User.findOne({
-    email
-  });
-  return user;
-};
+    email,
+  })
+  return user
+}
 
 export const findAllActiveUsers = async (req, res, next) => {
   try {
-    const activeUsers = await User.find({ active: true });
-    res.json({ activeUsers });
+    const activeUsers = await User.find({ active: true })
+    res.json({ activeUsers })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 export const updateUser = async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.params.id
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, req.body);
-    
+    const updatedUser = await User.findByIdAndUpdate(id, req.body)
 
     if (!updatedUser) {
       return res.status(404).json({
-        error_message: `The user with id: ${id} does not exists.`,
-      });
+        error_message: `The user with id ${id} does not exists.`,
+      })
     }
     res.json({
       message: `User ${id} updated.`,
-    });
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 export const deleteUser = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.params
   try {
-    const deletedUser = await User.findByIdAndDelete(id);
+    const deletedUser = await User.findByIdAndDelete(id)
     if (!deletedUser) {
       return res.status(404).json({
-        error_message: `The user with id: ${id} does not exists.`,
-      });
+        error_message: `The user with id ${id} does not exists.`,
+      })
     }
     res.json({
-      message: `User with id: ${id} was deleted.`,
-    });
+      message: `User with id ${id} was deleted.`,
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}

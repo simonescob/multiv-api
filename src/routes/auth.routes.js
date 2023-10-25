@@ -1,23 +1,27 @@
-import passport from 'passport'
-import { Router } from 'express';
+// import passport from 'passport'
+import { Router } from 'express'
 import * as authController from '../controllers/auth.controller'
+// import passport from 'passport'
 
-const router = Router();
+const router = Router()
 
-router.post(
-    '/login',
-    passport.authenticate('local', { session: false }),
-    authController.handleLogin
-);
+router.post('/login', authController.loginUser)
+router.post('/refresh', authController.refreshToken)
 
-router.get(
-    '/refresh',
-    authController.handleRefreshToken
-);
+// router.post(
+//     '/login',
+//     passport.authenticate('local', { session: false }),
+//     authController.handleLogin
+// );
 
-router.get(
-    '/logout',
-    authController.handleLogout
-);
+// router.get(
+//     '/refresh',
+//     authController.handleRefreshToken
+// );
 
-export default router;
+// router.get(
+//     '/logout',
+//     authController.handleLogout
+// );
+
+export default router
