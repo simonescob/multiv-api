@@ -1,5 +1,7 @@
 import DeliveryOrder from '../models/DeliveryOrder'
+import Order from '../models/Order'
 import { getPagination } from '../libs/getPagination'
+import mongoose from 'mongoose'
 
 export const findAllDeliveryOrders = async (req, res, next) => {
   try {
@@ -17,12 +19,21 @@ export const findAllDeliveryOrders = async (req, res, next) => {
       offset,
       limit,
       name,
-      populate: 'product',
+      populate: [
+        {
+          path: 'orders',
+          select: 'user _id active price comments',
+        },
+        {
+          path: 'user',
+          select: 'username _id role',
+        },
+      ],
     })
 
     res.json({
       totalItems: data.totalDocs,
-      orders: data.docs,
+      deliveryOrders: data.docs,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
     })
@@ -45,9 +56,21 @@ export const createDeliveryOrder = async (req, res, next) => {
     })
   }
 
-  if (!req.body.products) {
+  if (!req.body.orders) {
     return res.status(400).send({
-      error_message: 'Products are required',
+      error_message: 'Orders are required',
+    })
+  }
+
+  const validOrders = req.body.orders.filter((id) => mongoose.Types.ObjectId.isValid(id))
+
+  const orderExist = await Order.find({
+    _id: { $in: validOrders },
+  })
+
+  if (orderExist.length !== req.body.orders.length) {
+    return res.status(400).send({
+      error_message: 'Some orders not exists.',
     })
   }
 
@@ -56,9 +79,9 @@ export const createDeliveryOrder = async (req, res, next) => {
     const newDeliveryOrder = new DeliveryOrder({
       name: req.body.name,
       user: req.body.user,
-      products: req.body.products,
+      orders: req.body.orders,
       comments: req.body.comments,
-      arrival_date: req.body.arrival_date,
+      delivered: false,
       active: req.body.active ? req.body.active : true,
     })
 
@@ -80,7 +103,16 @@ export const findOneDeliveryOrder = async (req, res, next) => {
   const { id } = req.params
 
   try {
-    const order = await DeliveryOrder.findById(id).populate('product').populate('user')
+    const order = await DeliveryOrder.findById(id)
+      .populate({
+        path: 'orders',
+        select: 'user _id active price comments',
+      })
+      .populate({
+        path: 'user',
+        select: 'username _id role',
+      })
+
     if (!order) {
       return res.status(404).json({
         error_message: `The delivery order with id ${id} does not exists.`,

@@ -1,5 +1,7 @@
 import KitchenOrder from '../models/KitchenOrder'
+import Order from '../models/Order'
 import { getPagination } from '../libs/getPagination'
+import mongoose from 'mongoose'
 
 export const findAllKitchenOrders = async (req, res, next) => {
   try {
@@ -17,12 +19,17 @@ export const findAllKitchenOrders = async (req, res, next) => {
       offset,
       limit,
       name,
-      populate: 'deliveryOrders',
+      populate: [
+        {
+          path: 'orders',
+          select: 'user _id active price comments',
+        },
+      ],
     })
 
     res.json({
       totalItems: data.totalDocs,
-      orders: data.docs,
+      kitchenOrders: data.docs,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
     })
@@ -38,21 +45,31 @@ export const createKitchenOrder = async (req, res, next) => {
       error_message: 'Kitchen order name is required',
     })
   }
+  if (!req.body.orders) {
+    return res.status(400).send({
+      error_message: 'Kitchen order name is required',
+    })
+  }
 
-  // if (!req.body.user) {
-  //   return res.status(400).send({
-  //     error_message: 'User is required',
-  //   });
-  // }
+  const validOrders = req.body.orders.filter((id) => mongoose.Types.ObjectId.isValid(id))
+
+  const orderExist = await Order.find({
+    _id: { $in: validOrders },
+  })
+
+  if (orderExist.length !== req.body.orders.length) {
+    return res.status(400).send({
+      error_message: 'Some orders not exists.',
+    })
+  }
 
   // quiero guardar una orden
   try {
     const newOrder = new KitchenOrder({
       name: req.body.name,
-      user: req.body.user,
-      products: req.body.products,
+      orders: req.body.orders,
       comments: req.body.comments,
-      arrival_date: req.body.arrival_date,
+      cooked: false,
       active: req.body.active ? req.body.active : true,
     })
 
@@ -74,7 +91,10 @@ export const findOneKitchenOrder = async (req, res, next) => {
   const { id } = req.params
 
   try {
-    const order = await KitchenOrder.findById(id).populate('deliveryOrders')
+    const order = await KitchenOrder.findById(id).populate({
+      path: 'orders',
+      select: 'user _id active price comments',
+    })
     if (!order) {
       return res.status(404).json({
         error_message: `The kitchen order with id ${id} does not exists.`,
@@ -110,7 +130,7 @@ export const updateKitchenOrder = async (req, res, next) => {
 
     if (!updateOrder) {
       return res.status(404).json({
-        error_message: `The kitchen order with id: ${id} does not exists.`,
+        error_message: `Kitchen order with id ${id} does not exists.`,
       })
     }
     res.json({

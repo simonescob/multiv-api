@@ -13,18 +13,17 @@ const deliveryOrderSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    product: {
-      type: Schema.Types.ObjectId,
-      ref: 'Product',
-    },
+    orders: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Order',
+      },
+    ],
     comments: {
       type: String,
       required: true,
       trim: true,
       maxlength: 100,
-    },
-    arrival_date: {
-      type: Date,
     },
     delivered: {
       type: Boolean,

@@ -9,9 +9,9 @@ const menuSchema = new Schema(
       trim: true,
       maxlenght: 100,
     },
-    description: {
+    comments: {
       type: String,
-      require: true,
+      require: false,
       trim: true,
       maxlenght: 100,
     },

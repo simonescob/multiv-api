@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+import { Schema, model } from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const kitchenOrderSchema = new Schema(
   {
@@ -9,14 +9,10 @@ const kitchenOrderSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
-    deliveryOrders: [
+    orders: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'DeliveryOrder',
+        ref: 'Order',
       },
     ],
     comments: {
@@ -24,6 +20,10 @@ const kitchenOrderSchema = new Schema(
       required: true,
       trim: true,
       maxlength: 100,
+    },
+    cooked: {
+      type: Boolean,
+      default: false,
     },
     active: {
       type: Boolean,
@@ -34,8 +34,8 @@ const kitchenOrderSchema = new Schema(
     versionKey: false,
     timestamps: true,
   }
-);
+)
 
-kitchenOrderSchema.plugin(mongoosePaginate);
+kitchenOrderSchema.plugin(mongoosePaginate)
 
-export default model('KitchenOrder', kitchenOrderSchema);
+export default model('KitchenOrder', kitchenOrderSchema)

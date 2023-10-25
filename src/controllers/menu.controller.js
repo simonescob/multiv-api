@@ -1,6 +1,7 @@
 import Menu from '../models/Menu'
 import Product from '../models/Product'
 import { getPagination } from '../libs/getPagination'
+import mongoose from 'mongoose'
 
 export const findAllMenus = async (req, res, next) => {
   try {
@@ -18,7 +19,10 @@ export const findAllMenus = async (req, res, next) => {
       offset,
       limit,
       name,
-      populate: 'products',
+      populate: {
+        path: 'products',
+        select: 'name _id active price', // Especifica los campos que deseas poblar del documento 'product'
+      },
     })
 
     res.json({
@@ -39,24 +43,19 @@ export const createMenu = async (req, res, next) => {
     })
   }
 
-  if (!req.body.description) {
-    return res.status(400).send({
-      error_message: 'Menu description is required',
-    })
-  }
-
   if (!req.body.products) {
     return res.status(400).send({
-      error_message: 'Menu products is required',
+      error_message: 'Menu products are required',
     })
   }
 
   // check ingredients on ddbb
-  const productExist = await Product.find({
-    _id: { $in: req.body.products },
-  })
 
-  // console.log(ingExs)
+  const validProducts = req.body.products.filter((id) => mongoose.Types.ObjectId.isValid(id))
+
+  const productExist = await Product.find({
+    _id: { $in: validProducts },
+  })
 
   if (productExist.length !== req.body.products.length) {
     return res.status(400).send({
@@ -67,7 +66,7 @@ export const createMenu = async (req, res, next) => {
   try {
     const newMenu = new Menu({
       name: req.body.name,
-      description: req.body.description,
+      comments: req.body.comments,
       products: req.body.products,
       active: req.body.active ? req.body.active : true,
     })
@@ -91,7 +90,11 @@ export const findOneMenu = async (req, res, next) => {
   const { id } = req.params
 
   try {
-    const menu = await Menu.findById(id)
+    const menu = await Menu.findById(id).populate({
+      path: 'products',
+      select: 'name _id active price',
+    })
+
     if (!menu) {
       return res.status(404).json({
         error_message: `The menu with id ${id} does not exists.`,
