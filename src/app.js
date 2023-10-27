@@ -13,7 +13,7 @@ import ordersRoutes from './routes/orders.routes'
 import cookieParser from 'cookie-parser'
 import passport from 'passport'
 import { Strategy } from './strategies/passport.js'
-
+import config from './config'
 import cors from 'cors'
 import { logErrors, wrapErrors, errorHandler } from './middlewares/error.handler'
 import notFoundHandler from './middlewares/notFound.handler'
@@ -21,7 +21,11 @@ import notFoundHandler from './middlewares/notFound.handler'
 const app = express()
 
 // middlewares
-const corsOptions = {}
+const corsOptions = {
+  origin: config.cors,
+  credentials: true,
+}
+
 app.use(cors(corsOptions))
 app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: true }))
