@@ -70,7 +70,7 @@ export const createKitchenOrder = async (req, res, next) => {
     const count = await setCounter('KitchenOrder')
 
     const newOrder = new KitchenOrder({
-      orderNum: count,
+      kitchenOrderNum: count,
       name: req.body.name,
       orders: req.body.orders,
       comments: req.body.comments,
@@ -119,13 +119,6 @@ export const findAllActiveKitchenOrders = async (req, res, next) => {
   } catch (err) {
     next(err)
   }
-  // await KitchenOrder.find({ used: true })
-  //   .then((result) => {
-  //     res.json(result);
-  //   })
-  //   .catch((err) => {
-  //     throw err;
-  //   });
 }
 
 export const updateKitchenOrder = async (req, res, next) => {

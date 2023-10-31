@@ -1,5 +1,7 @@
 import Order from '../models/Order'
-// import Counter from '../models/Counter'
+import User from '../models/User'
+import Product from '../models/Product'
+import mongoose from 'mongoose'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
 
@@ -19,7 +21,6 @@ export const findAllOrders = async (req, res, next) => {
       offset,
       limit,
       name,
-      // populate: ['product', 'user']
       populate: [
         {
           path: 'product',
@@ -52,9 +53,37 @@ export const createOrder = async (req, res, next) => {
     })
   }
 
+  if (!mongoose.Types.ObjectId.isValid(req.body.user)) {
+    return res.status(400).send({
+      error_message: 'User not exists',
+    })
+  }
+
+  const userExist = await User.findById(req.body.user)
+
+  if (!userExist) {
+    return res.status(400).send({
+      error_message: 'User not exists',
+    })
+  }
+
   if (!req.body.product) {
     return res.status(400).send({
       error_message: 'Product is required',
+    })
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(req.body.product)) {
+    return res.status(400).send({
+      error_message: 'Product not exists',
+    })
+  }
+
+  const productExist = await Product.findById(req.body.product)
+
+  if (!productExist) {
+    return res.status(400).send({
+      error_message: 'Product not exists',
     })
   }
 

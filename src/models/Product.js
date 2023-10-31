@@ -29,7 +29,7 @@ const productSchema = new Schema(
     },
     ingredients: [
       {
-        ingredient: {
+        _id: {
           type: Schema.Types.ObjectId,
           ref: 'Ingredient',
         },
@@ -38,6 +38,12 @@ const productSchema = new Schema(
           required: true,
           trim: true,
           maxlength: 8,
+        },
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+          maxlength: 100,
         },
       },
     ],

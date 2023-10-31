@@ -20,7 +20,6 @@ export const findAllProducts = async (req, res, next) => {
       offset,
       limit,
       name,
-      populate: 'ingredients',
     })
 
     res.json({
@@ -68,10 +67,17 @@ export const createProduct = async (req, res, next) => {
       error_message: 'Some ingredient not exists.',
     })
   }
-  const arrayIngredients = req.body.ingredients.map((ing) => ({
-    _id: ing.ingredient,
-    gms: ing.gms,
-  }))
+
+  // console.log('existentes> ', ingExs)
+
+  const arrayIngredients = req.body.ingredients.map((ing) => {
+    const filterIngredient = ingExs.find((item) => JSON.stringify(item._id) === JSON.stringify(ing.ingredient))
+    return {
+      _id: ing.ingredient,
+      gms: ing.gms,
+      name: filterIngredient.name,
+    }
+  })
 
   try {
     const count = await setCounter('Product')
@@ -102,7 +108,7 @@ export const findOneProduct = async (req, res, next) => {
   const { id } = req.params
 
   try {
-    const product = await Product.findById(id).populate('ingredients')
+    const product = await Product.findById(id)
     if (!product) {
       return res.status(404).json({
         error_message: `The prduct with id ${id} does not exists.`,

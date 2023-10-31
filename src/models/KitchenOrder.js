@@ -3,7 +3,7 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 
 const kitchenOrderSchema = new Schema(
   {
-    orderNum: {
+    kitchenOrderNum: {
       type: Number,
       required: true,
       trim: true,

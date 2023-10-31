@@ -81,7 +81,7 @@ export const createDeliveryOrder = async (req, res, next) => {
     const count = await setCounter('DeliveryOrder')
 
     const newDeliveryOrder = new DeliveryOrder({
-      orderNum: count,
+      deliveryOrderNum: count,
       name: req.body.name,
       user: req.body.user,
       orders: req.body.orders,
