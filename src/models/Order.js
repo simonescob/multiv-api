@@ -29,6 +29,9 @@ const orderSchema = new Schema(
       trim: true,
       maxlength: 140,
     },
+    deliveryDate: {
+      type: Date,
+    },
     active: {
       type: Boolean,
       default: true,

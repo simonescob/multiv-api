@@ -1,9 +1,11 @@
 import Order from '../models/Order'
 import User from '../models/User'
 import Product from '../models/Product'
-import mongoose from 'mongoose'
+// import mongoose from 'mongoose'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
+import Boom from '@hapi/boom'
+import { orderSchema, orderObjectIdSchema } from '../libs/validation/yupSchemas'
 
 export const findAllOrders = async (req, res, next) => {
   try {
@@ -45,77 +47,141 @@ export const findAllOrders = async (req, res, next) => {
 }
 
 export const createOrder = async (req, res, next) => {
-  // valido vengan datos
+  const { product, user, comments, price, deliveryDate } = req.body
 
-  if (!req.body.user) {
-    return res.status(400).send({
-      error_message: 'User is required',
+  try {
+    await orderSchema.validate(req.body, { abortEarly: false })
+    await orderObjectIdSchema.validate({ user, product }, { abortEarly: false })
+
+    if (user) {
+      const userExists = await User.findById(user)
+      if (!userExists) {
+        throw Boom.notFound('El usuario no existe')
+      }
+    }
+
+    if (product) {
+      const productExists = await Product.findById(product)
+      if (!productExists) {
+        throw Boom.notFound('El producto no existe')
+      }
+    }
+
+    const count = await setCounter('Order')
+
+    const newOrderData = new Order({
+      orderNum: count,
+      user,
+      product,
+      price,
+      comments,
+      deliveryDate,
     })
+
+    if (user && user.trim() !== '') {
+      newOrderData.user = user
+    }
+    if (product && product.trim() !== '') {
+      newOrderData.product = product
+    }
+
+    const newOrder = new Order(newOrderData)
+
+    const result = await newOrder.save()
+    res.status(201).json({ result })
+  } catch (error) {
+    console.log(error)
+    if (error.isBoom) {
+      res.status(error.output.statusCode).json(error.output.payload)
+    } else if (error.name === 'ValidationError') {
+      res.status(400).json({ error: 'Error de validación', detalles: error.errors })
+    } else {
+      res.status(500).json({ error: 'Error interno del servidor' })
+    }
   }
 
-  if (!mongoose.Types.ObjectId.isValid(req.body.user)) {
-    return res.status(400).send({
-      error_message: 'User not exists',
-    })
-  }
+  // if (!req.body.user) {
+  //   return res.status(400).send({
+  //     error_message: 'User is required',
+  //   })
+  // }
 
-  const userExist = await User.findById(req.body.user)
+  // if (!mongoose.Types.ObjectId.isValid(req.body.user)) {
+  //   return res.status(400).send({
+  //     error_message: 'User not exists',
+  //   })
+  // }
 
-  if (!userExist) {
-    return res.status(400).send({
-      error_message: 'User not exists',
-    })
-  }
+  // const userExist = await User.findById(req.body.user)
 
-  if (!req.body.product) {
-    return res.status(400).send({
-      error_message: 'Product is required',
-    })
-  }
+  // if (!userExist) {
+  //   return res.status(400).send({
+  //     error_message: 'User not exists',
+  //   })
+  // }
 
-  if (!mongoose.Types.ObjectId.isValid(req.body.product)) {
-    return res.status(400).send({
-      error_message: 'Product not exists',
-    })
-  }
+  // if (!req.body.product) {
+  //   return res.status(400).send({
+  //     error_message: 'Product is required',
+  //   })
+  // }
+  // if (!req.body.deliveryDate) {
+  //   return res.status(400).send({
+  //     error_message: 'deliveryDate is required',
+  //   })
+  // }
 
-  const productExist = await Product.findById(req.body.product)
+  // if (!mongoose.Types.ObjectId.isValid(req.body.product)) {
+  //   return res.status(400).send({
+  //     error_message: 'Product not exists',
+  //   })
+  // }
 
-  if (!productExist) {
-    return res.status(400).send({
-      error_message: 'Product not exists',
-    })
-  }
+  // const productExist = await Product.findById(req.body.product)
 
-  if (!req.body.price) {
-    return res.status(400).send({
-      error_message: 'Order price is required',
-    })
-  }
+  // if (!productExist) {
+  //   return res.status(400).send({
+  //     error_message: 'Product not exists',
+  //   })
+  // }
+
+  // if (product) {
+  //   const productExist = await Product.findById(cliente)
+  //   if (!productExist) {
+  //     throw Boom.notFound('El producto no existe')
+  //   }
+  // }
+
+  // if (!req.body.price) {
+  //   return res.status(400).send({
+  //     error_message: 'Order price is required',
+  //   })
+  // }
 
   // quiero guardar una orden
-  try {
-    const count = await setCounter('Order')
-    const newOrder = new Order({
-      orderNum: count,
-      user: req.body.user,
-      product: req.body.product,
-      price: req.body.price,
-      comments: req.body.comments,
-    })
+  // try {
+  // const count = await setCounter('Order')
+  // const newOrder = new Order({
+  //   orderNum: count,
+  //   user: req.body.user,
+  //   product: req.body.product,
+  //   price: req.body.price,
+  //   comments: req.body.comments,
+  //   deliveryDate: req.body.deliveryDate,
+  // })
 
-    await newOrder
-      .save()
-      .then((result) => {
-        console.log(`Order with id ${result._id} was created.`)
-        res.json({ result })
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  } catch (err) {
-    next(err)
-  }
+  //   await newOrder
+  //     .save()
+  //     .then((result) => {
+  //       console.log(`Order with id ${result._id} was created.`)
+  //       res.json({ result })
+  //     })
+  //     .catch((err) => {
+  //       console.error(err)
+  //     })
+  // } catch (err) {
+  //   next(err)
+  // }
 }
 
 export const findOneOrder = async (req, res, next) => {
