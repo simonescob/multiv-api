@@ -1,7 +1,6 @@
 import Order from '../models/Order'
 import User from '../models/User'
 import Product from '../models/Product'
-// import mongoose from 'mongoose'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
 import Boom from '@hapi/boom'
@@ -99,89 +98,6 @@ export const createOrder = async (req, res, next) => {
       res.status(500).json({ error: 'Error interno del servidor' })
     }
   }
-
-  // if (!req.body.user) {
-  //   return res.status(400).send({
-  //     error_message: 'User is required',
-  //   })
-  // }
-
-  // if (!mongoose.Types.ObjectId.isValid(req.body.user)) {
-  //   return res.status(400).send({
-  //     error_message: 'User not exists',
-  //   })
-  // }
-
-  // const userExist = await User.findById(req.body.user)
-
-  // if (!userExist) {
-  //   return res.status(400).send({
-  //     error_message: 'User not exists',
-  //   })
-  // }
-
-  // if (!req.body.product) {
-  //   return res.status(400).send({
-  //     error_message: 'Product is required',
-  //   })
-  // }
-  // if (!req.body.deliveryDate) {
-  //   return res.status(400).send({
-  //     error_message: 'deliveryDate is required',
-  //   })
-  // }
-
-  // if (!mongoose.Types.ObjectId.isValid(req.body.product)) {
-  //   return res.status(400).send({
-  //     error_message: 'Product not exists',
-  //   })
-  // }
-
-  // const productExist = await Product.findById(req.body.product)
-
-  // if (!productExist) {
-  //   return res.status(400).send({
-  //     error_message: 'Product not exists',
-  //   })
-  // }
-
-  // if (product) {
-  //   const productExist = await Product.findById(cliente)
-  //   if (!productExist) {
-  //     throw Boom.notFound('El producto no existe')
-  //   }
-  // }
-
-  // if (!req.body.price) {
-  //   return res.status(400).send({
-  //     error_message: 'Order price is required',
-  //   })
-  // }
-
-  // quiero guardar una orden
-  // try {
-  // const count = await setCounter('Order')
-  // const newOrder = new Order({
-  //   orderNum: count,
-  //   user: req.body.user,
-  //   product: req.body.product,
-  //   price: req.body.price,
-  //   comments: req.body.comments,
-  //   deliveryDate: req.body.deliveryDate,
-  // })
-
-  //   await newOrder
-  //     .save()
-  //     .then((result) => {
-  //       console.log(`Order with id ${result._id} was created.`)
-  //       res.json({ result })
-  //     })
-  //     .catch((err) => {
-  //       console.error(err)
-  //     })
-  // } catch (err) {
-  //   next(err)
-  // }
 }
 
 export const findOneOrder = async (req, res, next) => {

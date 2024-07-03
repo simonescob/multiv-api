@@ -14,6 +14,10 @@ export const orderSchema = yup.object().shape({
   deliveryDate: yup.date('La fecha del pedido no es válida').required('La fecha del pedido es requerida'),
 })
 
+export const ingredientSchema = yup.object().shape({
+  name: yup.string().required('Nombre es requerido'),
+})
+
 export const orderObjectIdSchema = yup.object().shape({
   user: objectIdValidation('User'),
   product: objectIdValidation('Product'),
