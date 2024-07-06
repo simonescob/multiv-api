@@ -1,10 +1,10 @@
 import Order from '../models/Order'
-import User from '../models/User'
-import Product from '../models/Product'
+// import User from '../models/User'
+// import Product from '../models/Product'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
-import Boom from '@hapi/boom'
-import { orderSchema, orderObjectIdSchema } from '../libs/validation/yupSchemas'
+// import Boom from '@hapi/boom'
+import { orderSchema } from '../libs/validation/yupSchemas'
 
 export const findAllOrders = async (req, res, next) => {
   try {
@@ -49,22 +49,22 @@ export const createOrder = async (req, res, next) => {
   const { product, user, comments, price, deliveryDate } = req.body
 
   try {
-    await orderSchema.validate(req.body, { abortEarly: false })
-    await orderObjectIdSchema.validate({ user, product }, { abortEarly: false })
+    await orderSchema.validate(req.body, { abortEarly: true })
+    // await orderObjectIdSchema.validate({ user, product }, { abortEarly: false })
 
-    if (user) {
-      const userExists = await User.findById(user)
-      if (!userExists) {
-        throw Boom.notFound('El usuario no existe')
-      }
-    }
+    // if (user) {
+    //   const userExists = await User.findById(user)
+    //   if (!userExists) {
+    //     throw Boom.notFound('El usuario no existe')
+    //   }
+    // }
 
-    if (product) {
-      const productExists = await Product.findById(product)
-      if (!productExists) {
-        throw Boom.notFound('El producto no existe')
-      }
-    }
+    // if (product) {
+    //   const productExists = await Product.findById(product)
+    //   if (!productExists) {
+    //     throw Boom.notFound('El producto no existe')
+    //   }
+    // }
 
     const count = await setCounter('Order')
 
@@ -89,14 +89,8 @@ export const createOrder = async (req, res, next) => {
     const result = await newOrder.save()
     res.status(201).json({ result })
   } catch (error) {
-    console.log(error)
-    if (error.isBoom) {
-      res.status(error.output.statusCode).json(error.output.payload)
-    } else if (error.name === 'ValidationError') {
-      res.status(400).json({ error: 'Error de validación', detalles: error.errors })
-    } else {
-      res.status(500).json({ error: 'Error interno del servidor' })
-    }
+    console.error('Errores de validación:', error.errors)
+    res.status(400).json({ error: 'Error de validación', detalles: error.errors })
   }
 }
 

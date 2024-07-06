@@ -25,6 +25,10 @@ const kitchenOrderSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    inProcess: {
+      type: Boolean,
+      default: false,
+    },
     active: {
       type: Boolean,
       default: true,

@@ -39,12 +39,6 @@ const productSchema = new Schema(
           trim: true,
           maxlength: 8,
         },
-        name: {
-          type: String,
-          required: true,
-          trim: true,
-          maxlength: 100,
-        },
       },
     ],
     active: {

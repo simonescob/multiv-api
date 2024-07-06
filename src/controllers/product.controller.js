@@ -1,8 +1,9 @@
 import Product from '../models/Product'
-import Ingredient from '../models/Ingredient'
+// import Ingredient from '../models/Ingredient'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
-import mongoose from 'mongoose'
+// import mongoose from 'mongoose'
+import { productSchema } from '../libs/validation/yupSchemas'
 
 export const findAllProducts = async (req, res, next) => {
   try {
@@ -34,55 +35,72 @@ export const findAllProducts = async (req, res, next) => {
 }
 
 export const createProduct = async (req, res, next) => {
-  if (!req.body.name) {
-    return res.status(400).send({
-      error_message: 'Product name is required',
-    })
-  }
+  // try {
+  //   await productSchema.validate(req.body, { abortEarly: true })
+  //   console.log('Validación exitosa')
+  // } catch (error) {
+  //   console.error('Errores de validación:', error.errors)
+  //   res.status(400).json({ error: 'Error de validación', detalles: error.errors })
+  // }
 
-  if (!req.body.price) {
-    return res.status(400).send({
-      error_message: 'Product price is required',
-    })
-  }
+  // if (!req.body.name) {
+  //   return res.status(400).send({
+  //     error_message: 'Product name is required',
+  //   })
+  // }
 
-  if (!req.body.ingredients || !Array.isArray(req.body.ingredients) || !req.body.ingredients.length) {
-    return res.status(400).send({
-      error_message: 'Ingredients are required and need to be an array with data.',
-    })
-  }
+  // if (!req.body.price) {
+  //   return res.status(400).send({
+  //     error_message: 'Product price is required',
+  //   })
+  // }
 
-  // check ingredients on ddbb
+  // if (!req.body.ingredients || !Array.isArray(req.body.ingredients) || !req.body.ingredients.length) {
+  //   return res.status(400).send({
+  //     error_message: 'Ingredients are required and need to be an array with data.',
+  //   })
+  // }
 
-  const ingredientIds = req.body.ingredients.map((item) => item.ingredient)
+  // // check ingredients on ddbb
 
-  const validIngredientIds = ingredientIds.filter((id) => mongoose.Types.ObjectId.isValid(id))
+  // const ingredientIds = req.body.ingredients.map((item) => item.ingredient)
 
-  const ingExs = await Ingredient.find({
-    _id: { $in: validIngredientIds },
-  })
+  // const validIngredientIds = ingredientIds.filter((id) => mongoose.Types.ObjectId.isValid(id))
 
-  if (ingExs.length !== req.body.ingredients.length) {
-    return res.status(400).send({
-      error_message: 'Some ingredient not exists.',
-    })
-  }
+  // const ingExs = await Ingredient.find({
+  //   _id: { $in: validIngredientIds },
+  // })
 
-  // console.log('existentes> ', ingExs)
+  // if (ingExs.length !== req.body.ingredients.length) {
+  //   return res.status(400).send({
+  //     error_message: 'Some ingredient not exists.',
+  //   })
+  // }
 
-  const arrayIngredients = req.body.ingredients.map((ing) => {
-    const filterIngredient = ingExs.find((item) => JSON.stringify(item._id) === JSON.stringify(ing.ingredient))
-    return {
-      _id: ing.ingredient,
-      gms: ing.gms,
-      name: filterIngredient.name,
-    }
-  })
+  // // console.log('existentes> ', ingExs)
+
+  // const arrayIngredients = req.body.ingredients.map((ing) => {
+  //   const filterIngredient = ingExs.find((item) => JSON.stringify(item._id) === JSON.stringify(ing.ingredient))
+  //   return {
+  //     _id: ing.ingredient,
+  //     gms: ing.gms,
+  //     name: filterIngredient.name,
+  //   }
+  // })
 
   try {
+    await productSchema.validate(req.body, { abortEarly: true })
+
+    const arrayIngredients = req.body.ingredients.map((ing) => ({
+      _id: ing.ingredient,
+      gms: ing.gms,
+    }))
+
+    // console.log('arrayIngredients', arrayIngredients)
+
     const count = await setCounter('Product')
 
-    const newProduct = new Product({
+    const newProductData = new Product({
       productNum: count,
       name: req.body.name,
       ingredients: arrayIngredients,
@@ -91,16 +109,13 @@ export const createProduct = async (req, res, next) => {
       active: req.body.active ? req.body.active : true,
     })
 
-    await newProduct
-      .save()
-      .then((result) => {
-        res.json(result)
-      })
-      .catch((err) => {
-        res.status(500).json({ err })
-      })
-  } catch (err) {
-    next(err)
+    const newProduct = new Product(newProductData)
+
+    const result = await newProduct.save()
+    res.status(201).json({ result })
+  } catch (error) {
+    console.error('Errores de validación:', error.errors)
+    res.status(400).json({ error: 'Error de validación', detalles: error.errors })
   }
 }
 
