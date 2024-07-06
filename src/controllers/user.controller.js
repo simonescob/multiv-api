@@ -48,6 +48,16 @@ export const createUser = async (req, res, next) => {
       error_message: 'User password is required',
     })
   }
+  if (!req.body.name) {
+    return res.status(400).send({
+      error_message: 'Name is required',
+    })
+  }
+  if (!req.body.lastname) {
+    return res.status(400).send({
+      error_message: 'Lastname is required',
+    })
+  }
 
   // if (!req.body.role) {
   //   return res.status(400).send({
@@ -83,6 +93,8 @@ export const createUser = async (req, res, next) => {
   try {
     const newUser = new User({
       username: req.body.username,
+      name: req.body.name,
+      lastname: req.body.lastname,
       email: req.body.email,
       role: req.body.role,
       hashedPassword,

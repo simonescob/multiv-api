@@ -26,6 +26,10 @@ export const findAllKitchenOrders = async (req, res, next) => {
         {
           path: 'orders',
           select: 'user _id orderNum active price comments',
+          populate: {
+            path: 'user',
+            select: 'name username', // Incluir el campo 'name' del usuario
+          },
         },
       ],
     })

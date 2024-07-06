@@ -29,7 +29,7 @@ export const findAllOrders = async (req, res, next) => {
         },
         {
           path: 'user',
-          select: 'username _id role',
+          select: 'username _id name',
         },
       ],
     })
