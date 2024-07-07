@@ -31,7 +31,17 @@ const deliveryOrderSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
+    address: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
     delivered: {
+      type: Boolean,
+      default: false,
+    },
+    going: {
       type: Boolean,
       default: false,
     },

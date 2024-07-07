@@ -1,9 +1,7 @@
 import DeliveryOrder from '../models/DeliveryOrder'
-import Order from '../models/Order'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
-
-import mongoose from 'mongoose'
+import { deliveryOrderSchema } from '../libs/validation/yupSchemas'
 
 export const findAllDeliveryOrders = async (req, res, next) => {
   try {
@@ -45,62 +43,31 @@ export const findAllDeliveryOrders = async (req, res, next) => {
 }
 
 export const createDeliveryOrder = async (req, res, next) => {
-  // valido vengan datos
-  if (!req.body.name) {
-    return res.status(400).send({
-      error_message: 'Delivery order name is required',
-    })
-  }
-
-  if (!req.body.user) {
-    return res.status(400).send({
-      error_message: 'User is required',
-    })
-  }
-
-  if (!req.body.orders) {
-    return res.status(400).send({
-      error_message: 'Orders are required',
-    })
-  }
-
-  const validOrders = req.body.orders.filter((id) => mongoose.Types.ObjectId.isValid(id))
-
-  const orderExist = await Order.find({
-    _id: { $in: validOrders },
-  })
-
-  if (orderExist.length !== req.body.orders.length) {
-    return res.status(400).send({
-      error_message: 'Some orders not exists.',
-    })
-  }
-
-  // quiero guardar una orden
   try {
+    await deliveryOrderSchema.validate(req.body, { abortEarly: false })
     const count = await setCounter('DeliveryOrder')
 
-    const newDeliveryOrder = new DeliveryOrder({
+    const newDeliveryOrderData = new DeliveryOrder({
       deliveryOrderNum: count,
       name: req.body.name,
       user: req.body.user,
       orders: req.body.orders,
       comments: req.body.comments,
+      address: req.body.address,
       delivered: false,
+      going: false,
       active: req.body.active ? req.body.active : true,
     })
+    const newDeliveryOrder = new DeliveryOrder(newDeliveryOrderData)
 
-    await newDeliveryOrder
-      .save()
-      .then((result) => {
-        console.log(`Delivery order with id ${result._id} was created.`)
-        res.json({ result })
-      })
-      .catch((err) => {
-        throw err
-      })
-  } catch (err) {
-    next(err)
+    const result = await newDeliveryOrder.save()
+    res.status(201).json({ result })
+
+    // console.log('Validación exitosa')
+  } catch (error) {
+    console.error('Errores de validación:', error.errors)
+    res.status(400).json({ error: 'Error de validación', detalles: error.errors })
+    next(error)
   }
 }
 

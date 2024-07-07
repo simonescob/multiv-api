@@ -73,12 +73,22 @@ export const kitchenOrderSchema = yup.object().shape({
   inProcess: yup.boolean().default(false),
   active: yup.boolean().default(true),
 })
+export const deliveryOrderSchema = yup.object().shape({
+  name: yup.string().required('Nombre  requerido'),
+  user: objectIdExistsValidation('usuario', User),
+  orders: objectIdArrayExistsValidation('pedido', Order),
+  address: yup.string().required().trim().max(100),
+  comments: yup.string().required().trim().max(100),
+  delivered: yup.boolean().default(false),
+  going: yup.boolean().default(false),
+  active: yup.boolean().default(true),
+})
 
 export const ingredientSchema = yup.object().shape({
   name: yup.string().required('Nombre es requerido'),
 })
 export const productSchema = yup.object().shape({
-  name: yup.string().required('Nombre es requerido'),
+  name: yup.string().required('Nombre requerido'),
   price: yup.number('Precio no válido').max(999999, 'Precio demasiado elevado').positive('La cantidad debe ser positiva').required('Precio es requerido'),
   description: yup.string().max(140, 'Descripción no puede superar 140 caracteres'),
   ingredients: objectIdIngredientsArrayExistsValidation('ingrediente', Ingredient),
