@@ -1,6 +1,7 @@
 import User from '../models/User'
 import bcrypt from 'bcrypt'
 import { getPagination } from '../libs/getPagination'
+import { userSchema } from '../libs/validation/yupSchemas'
 
 export const findAllUsers = async (req, res, next) => {
   try {
@@ -37,81 +38,33 @@ export const findAllUsers = async (req, res, next) => {
 }
 
 export const createUser = async (req, res, next) => {
-  if (!req.body.username) {
-    return res.status(400).send({
-      error_message: 'User name is required',
-    })
-  }
-
-  if (!req.body.password) {
-    return res.status(400).send({
-      error_message: 'User password is required',
-    })
-  }
-  if (!req.body.name) {
-    return res.status(400).send({
-      error_message: 'Name is required',
-    })
-  }
-  if (!req.body.lastname) {
-    return res.status(400).send({
-      error_message: 'Lastname is required',
-    })
-  }
-
-  // if (!req.body.role) {
-  //   return res.status(400).send({
-  //     error_message: 'User role is required',
-  //   });
-  // }
-
-  if (!req.body.email) {
-    return res.status(400).send({
-      error_message: 'User email is required',
-    })
-  }
-
-  // check if username or email exists
-
-  const existingUsername = await findByUsername(req.body.username)
-  const existingEmail = await findByEmail(req.body.email)
-
-  if (existingUsername) {
-    return res.status(400).send({
-      error_message: 'Username ready exists',
-    })
-  }
-
-  if (existingEmail) {
-    return res.status(400).send({
-      error_message: 'Email ready exists',
-    })
-  }
-
-  const hashedPassword = await bcrypt.hash(req.body.password, 10)
-
   try {
-    const newUser = new User({
+    await userSchema.validate(req.body, { abortEarly: false })
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+
+    const newUserData = new User({
       username: req.body.username,
       name: req.body.name,
       lastname: req.body.lastname,
+      phone: req.body.phone,
       email: req.body.email,
+      address: req.body.address,
+      location: req.body.location,
+      birth: req.body.birth,
       role: req.body.role,
       hashedPassword,
     })
 
-    await newUser
-      .save()
-      .then((result) => {
-        result.hashedPassword = undefined
-        console.log(`User with id ${result._id} was created.`)
-        res.json({ result })
-      })
-      .catch((err) => {
-        throw err
-      })
-  } catch (err) {
-    next(err)
+    const newUser = new User(newUserData)
+
+    const result = await newUser.save()
+    result.hashedPassword = undefined
+
+    res.status(201).json({ result })
+  } catch (error) {
+    console.error('Errores de validación:', error.errors)
+    res.status(400).json({ error: 'Error de validación', detalles: error.errors })
+    next(error)
   }
 }
 

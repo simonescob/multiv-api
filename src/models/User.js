@@ -22,12 +22,35 @@ const userSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
-
     email: {
       type: String,
       required: true,
       trim: true,
       maxlength: 60,
+    },
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 30,
+    },
+    address: {
+      type: String,
+      required: false,
+      trim: true,
+      maxlength: 60,
+    },
+    location: {
+      type: [Number],
+      required: false,
+      maxlength: 2,
+    },
+    birth: {
+      type: Date,
+      required: false,
+      trim: true,
+      min: '1910-01-01',
+      max: Date.now,
     },
     hashedPassword: {
       type: String,
@@ -40,7 +63,7 @@ const userSchema = new Schema(
       required: true,
       trim: true,
       maxlength: 30,
-      default: 'client',
+      default: 'customer',
     },
   },
   {

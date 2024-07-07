@@ -1,8 +1,7 @@
 import Menu from '../models/Menu'
-import Product from '../models/Product'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
-import mongoose from 'mongoose'
+import { menuSchema } from '../libs/validation/yupSchemas'
 
 export const findAllMenus = async (req, res, next) => {
   try {
@@ -38,36 +37,11 @@ export const findAllMenus = async (req, res, next) => {
 }
 
 export const createMenu = async (req, res, next) => {
-  if (!req.body.name) {
-    return res.status(400).send({
-      error_message: 'Menu name is required',
-    })
-  }
-
-  if (!req.body.products) {
-    return res.status(400).send({
-      error_message: 'Menu products are required',
-    })
-  }
-
-  // check ingredients on ddbb
-
-  const validProducts = req.body.products.filter((id) => mongoose.Types.ObjectId.isValid(id))
-
-  const productExist = await Product.find({
-    _id: { $in: validProducts },
-  })
-
-  if (productExist.length !== req.body.products.length) {
-    return res.status(400).send({
-      error_message: 'Some products not exists.',
-    })
-  }
-
   try {
-    const count = await setCounter('Menu')
+    await menuSchema.validate(req.body, { abortEarly: false })
 
-    const newMenu = new Menu({
+    const count = await setCounter('Menu')
+    const newMenuData = new Menu({
       menuNum: count,
       name: req.body.name,
       comments: req.body.comments,
@@ -75,18 +49,14 @@ export const createMenu = async (req, res, next) => {
       active: req.body.active ? req.body.active : true,
     })
 
-    await newMenu
-      .save()
-      .then((result) => {
-        console.log(`Menu with id ${result._id} was created.`)
-        res.json({ result })
-      })
-      .catch((err) => {
-        // res.status(500).json({ err });
-        res.status(500).json({ err })
-      })
-  } catch (err) {
-    next(err)
+    const newMenu = new Menu(newMenuData)
+
+    const result = await newMenu.save()
+    res.status(201).json({ result })
+  } catch (error) {
+    console.error('Errores de validación:', error.errors)
+    res.status(400).json({ error: 'Error de validación', detalles: error.errors })
+    next(error)
   }
 }
 

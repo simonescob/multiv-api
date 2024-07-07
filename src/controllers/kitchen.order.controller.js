@@ -94,6 +94,7 @@ export const createKitchenOrder = async (req, res, next) => {
   } catch (error) {
     console.error('Errores de validación:', error.errors)
     res.status(400).json({ error: 'Error de validación', detalles: error.errors })
+    next(error)
   }
 }
 

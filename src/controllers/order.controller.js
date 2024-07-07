@@ -1,9 +1,6 @@
 import Order from '../models/Order'
-// import User from '../models/User'
-// import Product from '../models/Product'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
-// import Boom from '@hapi/boom'
 import { orderSchema } from '../libs/validation/yupSchemas'
 
 export const findAllOrders = async (req, res, next) => {
@@ -50,21 +47,6 @@ export const createOrder = async (req, res, next) => {
 
   try {
     await orderSchema.validate(req.body, { abortEarly: true })
-    // await orderObjectIdSchema.validate({ user, product }, { abortEarly: false })
-
-    // if (user) {
-    //   const userExists = await User.findById(user)
-    //   if (!userExists) {
-    //     throw Boom.notFound('El usuario no existe')
-    //   }
-    // }
-
-    // if (product) {
-    //   const productExists = await Product.findById(product)
-    //   if (!productExists) {
-    //     throw Boom.notFound('El producto no existe')
-    //   }
-    // }
 
     const count = await setCounter('Order')
 

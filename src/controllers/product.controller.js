@@ -1,8 +1,6 @@
 import Product from '../models/Product'
-// import Ingredient from '../models/Ingredient'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
-// import mongoose from 'mongoose'
 import { productSchema } from '../libs/validation/yupSchemas'
 
 export const findAllProducts = async (req, res, next) => {
@@ -35,59 +33,6 @@ export const findAllProducts = async (req, res, next) => {
 }
 
 export const createProduct = async (req, res, next) => {
-  // try {
-  //   await productSchema.validate(req.body, { abortEarly: true })
-  //   console.log('Validación exitosa')
-  // } catch (error) {
-  //   console.error('Errores de validación:', error.errors)
-  //   res.status(400).json({ error: 'Error de validación', detalles: error.errors })
-  // }
-
-  // if (!req.body.name) {
-  //   return res.status(400).send({
-  //     error_message: 'Product name is required',
-  //   })
-  // }
-
-  // if (!req.body.price) {
-  //   return res.status(400).send({
-  //     error_message: 'Product price is required',
-  //   })
-  // }
-
-  // if (!req.body.ingredients || !Array.isArray(req.body.ingredients) || !req.body.ingredients.length) {
-  //   return res.status(400).send({
-  //     error_message: 'Ingredients are required and need to be an array with data.',
-  //   })
-  // }
-
-  // // check ingredients on ddbb
-
-  // const ingredientIds = req.body.ingredients.map((item) => item.ingredient)
-
-  // const validIngredientIds = ingredientIds.filter((id) => mongoose.Types.ObjectId.isValid(id))
-
-  // const ingExs = await Ingredient.find({
-  //   _id: { $in: validIngredientIds },
-  // })
-
-  // if (ingExs.length !== req.body.ingredients.length) {
-  //   return res.status(400).send({
-  //     error_message: 'Some ingredient not exists.',
-  //   })
-  // }
-
-  // // console.log('existentes> ', ingExs)
-
-  // const arrayIngredients = req.body.ingredients.map((ing) => {
-  //   const filterIngredient = ingExs.find((item) => JSON.stringify(item._id) === JSON.stringify(ing.ingredient))
-  //   return {
-  //     _id: ing.ingredient,
-  //     gms: ing.gms,
-  //     name: filterIngredient.name,
-  //   }
-  // })
-
   try {
     await productSchema.validate(req.body, { abortEarly: true })
 
@@ -95,8 +40,6 @@ export const createProduct = async (req, res, next) => {
       _id: ing.ingredient,
       gms: ing.gms,
     }))
-
-    // console.log('arrayIngredients', arrayIngredients)
 
     const count = await setCounter('Product')
 
