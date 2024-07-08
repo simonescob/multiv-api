@@ -22,11 +22,17 @@ export const findAllKitchenOrders = async (req, res, next) => {
       populate: [
         {
           path: 'orders',
-          select: 'user _id orderNum active price comments',
-          populate: {
-            path: 'user',
-            select: 'name lastname username', // Incluir el campo 'name' del usuario
-          },
+          select: 'user _id orderNum active price comments product',
+          populate: [
+            {
+              path: 'user',
+              select: 'name lastname username', // Incluir el campo 'name' del usuario
+            },
+            {
+              path: 'product',
+              select: 'name', // Incluir el campo 'name' del usuario
+            },
+          ],
         },
       ],
     })
