@@ -44,7 +44,7 @@ export const findAllDeliveryOrders = async (req, res, next) => {
 
 export const createDeliveryOrder = async (req, res, next) => {
   try {
-    await deliveryOrderSchema.validate(req.body, { abortEarly: false })
+    await deliveryOrderSchema.validate(req.body, { abortEarly: true })
     const count = await setCounter('DeliveryOrder')
 
     const newDeliveryOrderData = new DeliveryOrder({

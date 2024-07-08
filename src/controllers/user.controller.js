@@ -39,7 +39,7 @@ export const findAllUsers = async (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
   try {
-    await userSchema.validate(req.body, { abortEarly: false })
+    await userSchema.validate(req.body, { abortEarly: true })
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
     const newUserData = new User({

@@ -38,7 +38,7 @@ export const findAllMenus = async (req, res, next) => {
 
 export const createMenu = async (req, res, next) => {
   try {
-    await menuSchema.validate(req.body, { abortEarly: false })
+    await menuSchema.validate(req.body, { abortEarly: true })
 
     const count = await setCounter('Menu')
     const newMenuData = new Menu({

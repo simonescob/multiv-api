@@ -38,7 +38,7 @@ export const createIngredient = async (req, res, next) => {
 
   // const NO_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1024px-Imagen_no_disponible.svg.png'
   try {
-    await ingredientSchema.validate(req.body, { abortEarly: false })
+    await ingredientSchema.validate(req.body, { abortEarly: true })
 
     const imageFile = req.file
       ? {
