@@ -1,10 +1,7 @@
 import KitchenOrder from '../models/KitchenOrder'
-// import Order from '../models/Order'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
 import { kitchenOrderSchema } from '../libs/validation/yupSchemas'
-
-// import mongoose from 'mongoose'
 
 export const findAllKitchenOrders = async (req, res, next) => {
   try {
@@ -46,33 +43,6 @@ export const findAllKitchenOrders = async (req, res, next) => {
 }
 
 export const createKitchenOrder = async (req, res, next) => {
-  // valido vengan datos
-  // if (!req.body.name) {
-  //   return res.status(400).send({
-  //     error_message: 'Kitchen order name is required',
-  //   })
-  // }
-  // if (!req.body.orders) {
-  //   return res.status(400).send({
-  //     error_message: 'Kitchen order name is required',
-  //   })
-  // }
-
-  // const validOrders = req.body.orders.filter((id) => mongoose.Types.ObjectId.isValid(id))
-
-  // const orderExist = await Order.find({
-  //   _id: { $in: validOrders },
-  // })
-
-  // if (orderExist.length !== req.body.orders.length) {
-  //   return res.status(400).send({
-  //     error_message: 'Some orders not exists.',
-  //   })
-  // }
-
-  // const { orders, comments, cooked, inProcess, active } = req.body
-
-  // quiero guardar una orden
   try {
     await kitchenOrderSchema.validate(req.body, { abortEarly: true })
 
@@ -84,6 +54,7 @@ export const createKitchenOrder = async (req, res, next) => {
       orders: req.body.orders,
       comments: req.body.comments,
       cooked: false,
+      cooking: false,
       active: req.body.active ? req.body.active : true,
     })
 

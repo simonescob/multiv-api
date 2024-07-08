@@ -80,7 +80,7 @@ export const kitchenOrderSchema = yup.object().shape({
   orders: objectIdArrayExistsValidation('pedido', Order),
   comments: yup.string().required().trim().max(100),
   cooked: yup.boolean().default(false),
-  inProcess: yup.boolean().default(false),
+  cooking: yup.boolean().default(false),
   active: yup.boolean().default(true),
 })
 export const menuSchema = yup.object().shape({

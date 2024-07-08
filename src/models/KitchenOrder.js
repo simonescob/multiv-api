@@ -25,7 +25,7 @@ const kitchenOrderSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    inProcess: {
+    cooking: {
       type: Boolean,
       default: false,
     },
