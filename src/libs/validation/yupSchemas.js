@@ -80,7 +80,10 @@ export const kitchenOrderSchema = yup.object().shape({
   comments: yup.string().required().trim().max(100),
   cooked: yup.boolean().default(false),
   cooking: yup.boolean().default(false),
-  user: objectIdExistsValidation('usuario', User),
+  user: objectIdExistsValidation('usuario', User).test('is-user-kitchen', 'El usuario no tiene el rol kitchen', async (value) => {
+    const user = await User.findById(value)
+    return user && user.role === 'kitchen'
+  }),
   active: yup.boolean().default(true),
 })
 export const menuSchema = yup.object().shape({
