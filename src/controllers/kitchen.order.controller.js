@@ -58,6 +58,7 @@ export const createKitchenOrder = async (req, res, next) => {
       kitchenOrderNum: count,
       name: req.body.name,
       orders: req.body.orders,
+      user: req.body.user,
       comments: req.body.comments,
       cooked: false,
       cooking: false,

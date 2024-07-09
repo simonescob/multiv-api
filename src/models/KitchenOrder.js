@@ -21,6 +21,10 @@ const kitchenOrderSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
     cooked: {
       type: Boolean,
       default: false,

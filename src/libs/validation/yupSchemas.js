@@ -56,7 +56,6 @@ const objectIdIngredientsArrayExistsValidation = (campo, model) => {
 const objectIdExistsValidation = (campo, model) => {
   return yup
     .string()
-    .required(`${campo} es requerido`)
     .test('is-mongodb-objectid', `${campo} no es un ObjectID válido de MongoDB`, (value) => mongoose.Types.ObjectId.isValid(value))
     .test('is-model-exists', ``, async function (value) {
       const { path, createError } = this
@@ -71,8 +70,8 @@ const objectIdExistsValidation = (campo, model) => {
 export const orderSchema = yup.object().shape({
   price: yup.number('Precio no válido').max(999999, 'Precio demasiado elevado').positive('La cantidad debe ser positiva'),
   comments: yup.string().max(140, 'Comentarios de no más de 140 caracteres'),
-  user: objectIdExistsValidation('usuario', User),
-  product: objectIdExistsValidation('producto', Product),
+  user: objectIdExistsValidation('usuario', User).required(`Usuario requerido`),
+  product: objectIdExistsValidation('producto', Product).required('Producto requerido'),
 
   deliveryDate: yup.date('La fecha del pedido no es válida').required('La fecha del pedido es requerida'),
 })
@@ -81,6 +80,7 @@ export const kitchenOrderSchema = yup.object().shape({
   comments: yup.string().required().trim().max(100),
   cooked: yup.boolean().default(false),
   cooking: yup.boolean().default(false),
+  user: objectIdExistsValidation('usuario', User),
   active: yup.boolean().default(true),
 })
 export const menuSchema = yup.object().shape({
