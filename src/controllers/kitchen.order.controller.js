@@ -82,11 +82,17 @@ export const findOneKitchenOrder = async (req, res, next) => {
   try {
     const order = await KitchenOrder.findById(id).populate({
       path: 'orders',
-      select: 'user _id active orderNum price comments',
-      populate: {
-        path: 'user',
-        select: 'username name lastname',
-      },
+      select: 'user _id active orderNum price comments product',
+      populate: [
+        {
+          path: 'user',
+          select: 'username name lastname',
+        },
+        {
+          path: 'product',
+          select: 'name', // Incluir el campo 'name' del usuario
+        },
+      ],
     })
     if (!order) {
       return res.status(404).json({

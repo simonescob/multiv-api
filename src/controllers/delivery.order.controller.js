@@ -22,11 +22,17 @@ export const findAllDeliveryOrders = async (req, res, next) => {
       populate: [
         {
           path: 'orders',
-          select: 'user orderNum _id active price comments',
-          populate: {
-            path: 'user',
-            select: 'username name lastname',
-          },
+          select: 'user orderNum _id active price comments product',
+          populate: [
+            {
+              path: 'user',
+              select: 'username name lastname',
+            },
+            {
+              path: 'product',
+              select: 'name', // Incluir el campo 'name' del usuario
+            },
+          ],
         },
         {
           path: 'user',
@@ -82,11 +88,17 @@ export const findOneDeliveryOrder = async (req, res, next) => {
     const order = await DeliveryOrder.findById(id)
       .populate({
         path: 'orders',
-        select: 'user _id orderNum active price comments',
-        populate: {
-          path: 'user',
-          select: 'username name lastname',
-        },
+        select: 'user _id orderNum active price comments product',
+        populate: [
+          {
+            path: 'user',
+            select: 'username name lastname',
+          },
+          {
+            path: 'product',
+            select: 'name', // Incluir el campo 'name' del usuario
+          },
+        ],
       })
       .populate({
         path: 'user',
