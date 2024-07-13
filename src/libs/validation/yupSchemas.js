@@ -93,13 +93,15 @@ export const menuSchema = yup.object().shape({
   active: yup.boolean().default(true),
 })
 export const deliveryOrderSchema = yup.object().shape({
-  name: yup.string().required('Nombre  requerido'),
-  users: objectIdArrayExistsValidation('usuario', User),
+  user: objectIdExistsValidation('usuario', User).test('is-user-delivery', 'El usuario no tiene el rol delivery', async (value) => {
+    const user = await User.findById(value)
+    return user && user.role === 'delivery'
+  }),
   orders: objectIdArrayExistsValidation('pedido', Order),
   address: yup.string().required().trim().max(100),
   comments: yup.string().required().trim().max(100),
   delivered: yup.boolean().default(false),
-  delivering: yup.boolean().default(false),
+  going: yup.boolean().default(false),
   active: yup.boolean().default(true),
 })
 

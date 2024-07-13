@@ -23,10 +23,14 @@ export const findAllDeliveryOrders = async (req, res, next) => {
         {
           path: 'orders',
           select: 'user orderNum _id active price comments',
+          populate: {
+            path: 'user',
+            select: 'username name lastname',
+          },
         },
         {
           path: 'user',
-          select: 'username _id role',
+          select: 'username name lastname _id',
         },
       ],
     })
@@ -50,7 +54,7 @@ export const createDeliveryOrder = async (req, res, next) => {
     const newDeliveryOrderData = new DeliveryOrder({
       deliveryOrderNum: count,
       name: req.body.name,
-      users: req.body.user,
+      user: req.body.user,
       orders: req.body.orders,
       comments: req.body.comments,
       address: req.body.address,
@@ -79,6 +83,10 @@ export const findOneDeliveryOrder = async (req, res, next) => {
       .populate({
         path: 'orders',
         select: 'user _id orderNum active price comments',
+        populate: {
+          path: 'user',
+          select: 'username name lastname',
+        },
       })
       .populate({
         path: 'user',

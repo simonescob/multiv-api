@@ -9,18 +9,11 @@ const deliveryOrderSchema = new Schema(
       trim: true,
       maxlength: 10,
     },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
+
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
-    users: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
     orders: [
       {
         type: Schema.Types.ObjectId,
