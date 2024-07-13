@@ -15,10 +15,12 @@ const deliveryOrderSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
+    users: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     orders: [
       {
         type: Schema.Types.ObjectId,
@@ -41,7 +43,7 @@ const deliveryOrderSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    going: {
+    delivering: {
       type: Boolean,
       default: false,
     },

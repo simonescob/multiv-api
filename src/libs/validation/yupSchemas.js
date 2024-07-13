@@ -94,12 +94,12 @@ export const menuSchema = yup.object().shape({
 })
 export const deliveryOrderSchema = yup.object().shape({
   name: yup.string().required('Nombre  requerido'),
-  user: objectIdExistsValidation('usuario', User),
+  users: objectIdArrayExistsValidation('usuario', User),
   orders: objectIdArrayExistsValidation('pedido', Order),
   address: yup.string().required().trim().max(100),
   comments: yup.string().required().trim().max(100),
   delivered: yup.boolean().default(false),
-  going: yup.boolean().default(false),
+  delivering: yup.boolean().default(false),
   active: yup.boolean().default(true),
 })
 

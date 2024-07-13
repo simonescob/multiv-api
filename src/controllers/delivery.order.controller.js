@@ -50,12 +50,12 @@ export const createDeliveryOrder = async (req, res, next) => {
     const newDeliveryOrderData = new DeliveryOrder({
       deliveryOrderNum: count,
       name: req.body.name,
-      user: req.body.user,
+      users: req.body.user,
       orders: req.body.orders,
       comments: req.body.comments,
       address: req.body.address,
       delivered: false,
-      going: false,
+      delivering: false,
       active: req.body.active ? req.body.active : true,
     })
     const newDeliveryOrder = new DeliveryOrder(newDeliveryOrderData)
