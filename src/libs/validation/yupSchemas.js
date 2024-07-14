@@ -101,7 +101,8 @@ export const deliveryOrderSchema = yup.object().shape({
   address: yup.string().required().trim().max(100),
   comments: yup.string().required().trim().max(100),
   delivered: yup.boolean().default(false),
-  going: yup.boolean().default(false),
+  deliveryDate: yup.date('La fecha del pedido no es válida'),
+  delivering: yup.boolean().default(false),
   active: yup.boolean().default(true),
 })
 

@@ -66,6 +66,8 @@ export const createDeliveryOrder = async (req, res, next) => {
       address: req.body.address,
       delivered: false,
       delivering: false,
+      deliveryDate: req.body.deliveryDate || new Date(),
+
       active: req.body.active ? req.body.active : true,
     })
     const newDeliveryOrder = new DeliveryOrder(newDeliveryOrderData)

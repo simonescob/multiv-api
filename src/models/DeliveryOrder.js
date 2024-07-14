@@ -40,6 +40,9 @@ const deliveryOrderSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    deliveryDate: {
+      type: Date,
+    },
     active: {
       type: Boolean,
       default: true,
