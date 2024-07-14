@@ -33,6 +33,9 @@ const kitchenOrderSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    cookDate: {
+      type: Date,
+    },
     active: {
       type: Boolean,
       default: true,

@@ -72,7 +72,6 @@ export const orderSchema = yup.object().shape({
   comments: yup.string().max(140, 'Comentarios de no más de 140 caracteres'),
   user: objectIdExistsValidation('usuario', User).required(`Usuario requerido`),
   product: objectIdExistsValidation('producto', Product).required('Producto requerido'),
-
   deliveryDate: yup.date('La fecha del pedido no es válida').required('La fecha del pedido es requerida'),
 })
 export const kitchenOrderSchema = yup.object().shape({
@@ -80,6 +79,7 @@ export const kitchenOrderSchema = yup.object().shape({
   comments: yup.string().required().trim().max(100),
   cooked: yup.boolean().default(false),
   cooking: yup.boolean().default(false),
+  cookDate: yup.date('La fecha del pedido no es válida'),
   user: objectIdExistsValidation('usuario', User).test('is-user-kitchen', 'El usuario no tiene el rol kitchen', async (value) => {
     const user = await User.findById(value)
     return user && user.role === 'kitchen'
