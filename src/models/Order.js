@@ -32,6 +32,25 @@ const orderSchema = new Schema(
     deliveryDate: {
       type: Date,
     },
+    cookDate: {
+      type: Date,
+    },
+    cooked: {
+      type: Boolean,
+      default: false,
+    },
+    cooking: {
+      type: Boolean,
+      default: false,
+    },
+    delivered: {
+      type: Boolean,
+      default: false,
+    },
+    delivering: {
+      type: Boolean,
+      default: false,
+    },
     active: {
       type: Boolean,
       default: true,

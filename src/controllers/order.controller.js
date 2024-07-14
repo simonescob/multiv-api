@@ -43,7 +43,7 @@ export const findAllOrders = async (req, res, next) => {
 }
 
 export const createOrder = async (req, res, next) => {
-  const { product, user, comments, price, deliveryDate } = req.body
+  const { product, user, comments, price, deliveryDate, cookDate, delivered, delivering, cooked, cooking } = req.body
 
   try {
     await orderSchema.validate(req.body, { abortEarly: true })
@@ -57,6 +57,11 @@ export const createOrder = async (req, res, next) => {
       price,
       comments,
       deliveryDate,
+      cookDate,
+      delivered,
+      delivering,
+      cooked,
+      cooking,
     })
 
     if (user && user.trim() !== '') {
