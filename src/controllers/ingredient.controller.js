@@ -148,3 +148,14 @@ export const deleteIngredient = async (req, res, next) => {
     next(err)
   }
 }
+export const deleteAllIngredients = async (req, res, next) => {
+  try {
+    await Ingredient.deleteMany({})
+    res.status(200).send({ message: 'Todos los ingredientes han sido borrados.' })
+  } catch (error) {
+    console.error('Error al borrar ingredientes:', error)
+    res.status(500).send({ message: 'Error al borrar ingredientes.' })
+
+    next()
+  }
+}
