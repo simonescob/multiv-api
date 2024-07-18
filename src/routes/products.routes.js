@@ -15,4 +15,6 @@ router.delete('/:id', productController.deleteProduct)
 
 router.put('/:id', productController.updateProduct)
 
+router.delete('/delete-all', productController.deleteAllProducts)
+
 export default router

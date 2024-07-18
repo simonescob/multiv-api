@@ -19,11 +19,23 @@ export const findAllProducts = async (req, res, next) => {
       offset,
       limit,
       name,
+      populate: {
+        path: 'ingredients.ingredient',
+        select: 'name',
+      },
     })
+    const products = data.docs
+    // const products = data.docs.map((product) => ({
+    //   ...product.toObject(),
+    //   ingredients: product.ingredients.map((ingredient) => ({
+    //     _id: ingredient._id,
+    //     name: ingredient.name,
+    //   })),
+    // }))
 
     res.json({
       totalItems: data.totalDocs,
-      products: data.docs,
+      products,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
     })
@@ -37,7 +49,7 @@ export const createProduct = async (req, res, next) => {
     await productSchema.validate(req.body, { abortEarly: true })
 
     const arrayIngredients = req.body.ingredients.map((ing) => ({
-      _id: ing.ingredient,
+      ingredient: ing.ingredient,
       gms: ing.gms,
     }))
 
@@ -120,5 +132,17 @@ export const deleteProduct = async (req, res, next) => {
     })
   } catch (err) {
     next(err)
+  }
+}
+
+export const deleteAllProducts = async (req, res, next) => {
+  try {
+    await Product.deleteMany({})
+    res.status(200).send({ message: 'Todos los productos han sido borrados.' })
+  } catch (error) {
+    console.error('Error al borrar Productes:', error)
+    res.status(500).send({ message: 'Error al borrar productos.' })
+
+    next()
   }
 }

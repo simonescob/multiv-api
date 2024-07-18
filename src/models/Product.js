@@ -29,7 +29,7 @@ const productSchema = new Schema(
     },
     ingredients: [
       {
-        _id: {
+        ingredient: {
           type: Schema.Types.ObjectId,
           ref: 'Ingredient',
         },

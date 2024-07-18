@@ -7,7 +7,7 @@ router.get('/', ingredientController.findAllIngredients)
 router.post('/', ingredientController.uploadImg, ingredientController.createIngredient)
 router.get('/active', ingredientController.findAllActiveIngredients)
 router.get('/intrash', ingredientController.findAllinTrashIngredients)
-router.get('/delete-all', ingredientController.deleteAllIngredients)
+router.delete('/delete-all', ingredientController.deleteAllIngredients)
 
 router.get('/:id', ingredientController.findOneIngredient)
 router.put('/:id', ingredientController.updateIngredient)
