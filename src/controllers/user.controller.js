@@ -5,20 +5,17 @@ import { userSchema } from '../libs/validation/yupSchemas'
 
 export const findAllUsers = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query
+    const { size, page, name, role } = req.query
 
-    const condition = name
-      ? {
-          name: { $regex: new RegExp(name), $options: 'i' },
-        }
-      : {}
-
+    const condition = {
+      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      ...(role && { role }),
+    }
     const { limit, offset } = getPagination(page, size)
 
     const data = await User.paginate(condition, {
       offset,
       limit,
-      name,
     })
 
     const dataUsers = data.docs.map((user) => {
@@ -99,6 +96,40 @@ export const findByEmail = async (email) => {
   })
   return user
 }
+
+// export const findAllUsersByRole = async (req, res, next) => {
+//   try {
+//     const { size, page, role } = req.query
+
+//     const condition = role
+//       ? {
+//           role: { $regex: new RegExp(role), $options: 'i' },
+//         }
+//       : {}
+
+//     const { limit, offset } = getPagination(page, size)
+
+//     const data = await User.paginate(condition, {
+//       offset,
+//       limit,
+//       role,
+//     })
+
+//     const dataUsers = data.docs.map((user) => {
+//       user.hashedPassword = undefined
+//       return user
+//     })
+
+//     res.json({
+//       totalItems: data.totalDocs,
+//       users: dataUsers,
+//       totalPages: data.totalPages,
+//       currentPage: data.page - 1,
+//     })
+//   } catch (err) {
+//     next(err)
+//   }
+// }
 
 export const findAllActiveUsers = async (req, res, next) => {
   try {

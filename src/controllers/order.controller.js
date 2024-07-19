@@ -26,7 +26,7 @@ export const findAllOrders = async (req, res, next) => {
         },
         {
           path: 'user',
-          select: 'username _id name',
+          select: 'username _id name lastname',
         },
       ],
     })
