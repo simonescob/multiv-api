@@ -22,7 +22,7 @@ export const findAllKitchenOrders = async (req, res, next) => {
       populate: [
         {
           path: 'orders',
-          select: 'user _id orderNum active price comments product',
+          select: 'user _id orderNum active price comments product deliveryDate cooking cooked',
           populate: [
             {
               path: 'user',
@@ -30,9 +30,13 @@ export const findAllKitchenOrders = async (req, res, next) => {
             },
             {
               path: 'product',
-              select: 'name', // Incluir el campo 'name' del usuario
+              select: 'name active', // Incluir el campo 'name' del usuario
             },
           ],
+        },
+        {
+          path: 'user',
+          select: 'name lastname username', // Incluir el campo 'name' del usuario
         },
       ],
     })
@@ -81,20 +85,25 @@ export const findOneKitchenOrder = async (req, res, next) => {
   const { id } = req.params
 
   try {
-    const order = await KitchenOrder.findById(id).populate({
-      path: 'orders',
-      select: 'user _id active orderNum price comments product',
-      populate: [
-        {
-          path: 'user',
-          select: 'username name lastname',
-        },
-        {
-          path: 'product',
-          select: 'name', // Incluir el campo 'name' del usuario
-        },
-      ],
-    })
+    const order = await KitchenOrder.findById(id)
+      .populate({
+        path: 'orders',
+        select: 'user _id active orderNum price comments product cooked cooking',
+        populate: [
+          {
+            path: 'user',
+            select: 'username name lastname',
+          },
+          {
+            path: 'product',
+            select: 'name', // Incluir el campo 'name' del usuario
+          },
+        ],
+      })
+      .populate({
+        path: 'user',
+        select: 'usernname name lastname',
+      })
     if (!order) {
       return res.status(404).json({
         error_message: `The kitchen order with id ${id} does not exists.`,
