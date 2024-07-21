@@ -22,13 +22,11 @@ const deliveryOrderSchema = new Schema(
     ],
     comments: {
       type: String,
-      required: true,
       trim: true,
       maxlength: 100,
     },
     address: {
       type: String,
-      required: true,
       trim: true,
       maxlength: 100,
     },

@@ -103,8 +103,8 @@ export const deliveryOrderSchema = yup.object().shape({
     return user && user.role === 'delivery'
   }),
   orders: objectIdArrayExistsValidation('pedido', Order),
-  address: yup.string().required().trim().max(100),
-  comments: yup.string().required().trim().max(100),
+  address: yup.string().trim().max(100),
+  comments: yup.string().trim().max(100),
   delivered: yup.boolean().default(false),
   deliveryDate: yup.date('La fecha del pedido no es válida'),
   delivering: yup.boolean().default(false),
