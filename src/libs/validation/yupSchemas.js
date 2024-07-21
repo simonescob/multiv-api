@@ -94,7 +94,7 @@ export const kitchenOrderSchema = yup.object().shape({
 export const menuSchema = yup.object().shape({
   name: yup.string().required('Nombre requerido'),
   products: objectIdArrayExistsValidation('producto', Product),
-  comments: yup.string().required().trim().max(100),
+  comments: yup.string().trim().max(100),
   active: yup.boolean().default(true),
 })
 export const deliveryOrderSchema = yup.object().shape({
