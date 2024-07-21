@@ -17,7 +17,6 @@ const kitchenOrderSchema = new Schema(
     ],
     comments: {
       type: String,
-      required: true,
       trim: true,
       maxlength: 100,
     },

@@ -62,6 +62,7 @@ export const createOrder = async (req, res, next) => {
       delivering,
       cooked,
       cooking,
+      active: req.body.active ? req.body.active : true,
     })
 
     if (user && user.trim() !== '') {

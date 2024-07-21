@@ -81,7 +81,7 @@ export const orderSchema = yup.object().shape({
 })
 export const kitchenOrderSchema = yup.object().shape({
   orders: objectIdArrayExistsValidation('pedido', Order),
-  comments: yup.string().required().trim().max(100),
+  comments: yup.string().trim().max(100),
   cooked: yup.boolean().default(false),
   cooking: yup.boolean().default(false),
   cookDate: yup.date('La fecha del pedido no es válida'),

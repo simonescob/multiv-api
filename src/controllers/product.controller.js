@@ -25,13 +25,6 @@ export const findAllProducts = async (req, res, next) => {
       },
     })
     const products = data.docs
-    // const products = data.docs.map((product) => ({
-    //   ...product.toObject(),
-    //   ingredients: product.ingredients.map((ingredient) => ({
-    //     _id: ingredient._id,
-    //     name: ingredient.name,
-    //   })),
-    // }))
 
     res.json({
       totalItems: data.totalDocs,
