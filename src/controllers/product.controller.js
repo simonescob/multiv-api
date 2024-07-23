@@ -7,12 +7,10 @@ export const findAllProducts = async (req, res, next) => {
   try {
     const { size, page, name } = req.query
 
-    const condition = name
-      ? {
-          name: { $regex: new RegExp(name), $options: 'i' },
-        }
-      : {}
-
+    const condition = {
+      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      deletedAt: null,
+    }
     const { limit, offset } = getPagination(page, size)
 
     const data = await Product.paginate(condition, {
@@ -137,5 +135,26 @@ export const deleteAllProducts = async (req, res, next) => {
     res.status(500).send({ message: 'Error al borrar productos.' })
 
     next()
+  }
+}
+export const sendToTrashProduct = async (req, res, next) => {
+  const id = req.params.id
+  try {
+    const product = await Product.findById(id)
+
+    const newDeletedState = product.deletedAt ? null : new Date()
+
+    const updateProduct = await Product.findByIdAndUpdate(id, { deletedAt: newDeletedState })
+
+    if (!updateProduct) {
+      return res.status(404).json({
+        error_message: `The product with id ${id} does not exists.`,
+      })
+    }
+    res.json({
+      message: `product ${id} send to trash.`,
+    })
+  } catch (err) {
+    next(err)
   }
 }

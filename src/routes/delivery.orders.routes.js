@@ -1,18 +1,20 @@
-import { Router } from 'express';
-import * as deliveryOrderController from '../controllers/delivery.order.controller';
+import { Router } from 'express'
+import * as deliveryOrderController from '../controllers/delivery.order.controller'
 
-const router = Router();
+const router = Router()
 
-router.post('/', deliveryOrderController.createDeliveryOrder);
+router.post('/', deliveryOrderController.createDeliveryOrder)
 
-router.get('/', deliveryOrderController.findAllDeliveryOrders);
+router.get('/', deliveryOrderController.findAllDeliveryOrders)
 
-router.get('/active', deliveryOrderController.findAllActiveDeliveryOrders);
+router.get('/active', deliveryOrderController.findAllActiveDeliveryOrders)
 
-router.get('/:id', deliveryOrderController.findOneDeliveryOrder);
+router.get('/:id', deliveryOrderController.findOneDeliveryOrder)
 
-router.delete('/:id', deliveryOrderController.deleteDeliveryOrder);
+router.delete('/:id', deliveryOrderController.deleteDeliveryOrder)
 
-router.put('/:id', deliveryOrderController.updateDeliveryOrder);
+router.put('/:id', deliveryOrderController.updateDeliveryOrder)
 
-export default router;
+router.put('/trash/:id', deliveryOrderController.sendToTrashDeliveryOrder)
+
+export default router

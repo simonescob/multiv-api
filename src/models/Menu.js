@@ -31,6 +31,10 @@ const menuSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     versionKey: false,

@@ -7,11 +7,10 @@ export const findAllOrders = async (req, res, next) => {
   try {
     const { size, page, name } = req.query
 
-    const condition = name
-      ? {
-          name: { $regex: new RegExp(name), $options: 'i' },
-        }
-      : {}
+    const condition = {
+      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      deletedAt: null,
+    }
 
     const { limit, offset } = getPagination(page, size)
 
@@ -63,6 +62,7 @@ export const createOrder = async (req, res, next) => {
       cooked,
       cooking,
       active: req.body.active ? req.body.active : true,
+      deleteAt: null,
     })
 
     if (user && user.trim() !== '') {
@@ -135,6 +135,28 @@ export const updateOrder = async (req, res, next) => {
     }
     res.json({
       message: `Order ${id} updated.`,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const sendToTrashOrder = async (req, res, next) => {
+  const id = req.params.id
+  try {
+    const order = await Order.findById(id)
+
+    const newDeletedState = order.deletedAt ? null : new Date()
+
+    const updateOrder = await Order.findByIdAndUpdate(id, { deletedAt: newDeletedState })
+
+    if (!updateOrder) {
+      return res.status(404).json({
+        error_message: `The order with id ${id} does not exists.`,
+      })
+    }
+    res.json({
+      message: `Order ${id} send to trash.`,
     })
   } catch (err) {
     next(err)

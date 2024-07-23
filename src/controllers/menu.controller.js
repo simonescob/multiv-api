@@ -7,11 +7,10 @@ export const findAllMenus = async (req, res, next) => {
   try {
     const { size, page, name } = req.query
 
-    const condition = name
-      ? {
-          name: { $regex: new RegExp(name), $options: 'i' },
-        }
-      : {}
+    const condition = {
+      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      deletedAt: null,
+    }
 
     const { limit, offset } = getPagination(page, size)
 
@@ -47,6 +46,7 @@ export const createMenu = async (req, res, next) => {
       comments: req.body.comments,
       products: req.body.products,
       active: req.body.active ? req.body.active : true,
+      deletedAt: null,
     })
 
     const newMenu = new Menu(newMenuData)
@@ -119,6 +119,28 @@ export const deleteMenu = async (req, res, next) => {
     }
     res.json({
       message: `Menu with id: ${id} was deleted.`,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const sendToTrashMenu = async (req, res, next) => {
+  const id = req.params.id
+  try {
+    const menu = await Menu.findById(id)
+
+    const newDeletedState = menu.deletedAt ? null : new Date()
+
+    const updateMenu = await Menu.findByIdAndUpdate(id, { deletedAt: newDeletedState })
+
+    if (!updateMenu) {
+      return res.status(404).json({
+        error_message: `Menu with id ${id} does not exists.`,
+      })
+    }
+    res.json({
+      message: `Menu ${id} send to trash.`,
     })
   } catch (err) {
     next(err)

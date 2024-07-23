@@ -7,11 +7,10 @@ export const findAllKitchenOrders = async (req, res, next) => {
   try {
     const { size, page, name } = req.query
 
-    const condition = name
-      ? {
-          name: { $regex: new RegExp(name), $options: 'i' },
-        }
-      : {}
+    const condition = {
+      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      deletedAt: null,
+    }
 
     const { limit, offset } = getPagination(page, size)
 
@@ -68,6 +67,7 @@ export const createKitchenOrder = async (req, res, next) => {
       cooking: false,
       cookDate: req.body.cookDate || new Date(),
       active: req.body.active ? req.body.active : true,
+      deletedAt: null,
     })
 
     const newKitchenOrder = new KitchenOrder(newKitchenOrderData)
@@ -154,6 +154,28 @@ export const deleteKitchenOrder = async (req, res, next) => {
     }
     res.json({
       message: `Kitchen order with id ${id} was deleted.`,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const sendToTrashKitchenOrder = async (req, res, next) => {
+  const id = req.params.id
+  try {
+    const kitchenOrder = await KitchenOrder.findById(id)
+
+    const newDeletedState = kitchenOrder.deletedAt ? null : new Date()
+
+    const updateKitchenOrder = await KitchenOrder.findByIdAndUpdate(id, { deletedAt: newDeletedState })
+
+    if (!updateKitchenOrder) {
+      return res.status(404).json({
+        error_message: `The kitchen order with id ${id} does not exists.`,
+      })
+    }
+    res.json({
+      message: `The kitchen order ${id} send to trash.`,
     })
   } catch (err) {
     next(err)

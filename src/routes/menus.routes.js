@@ -1,18 +1,20 @@
-import { Router } from 'express';
-import * as menuController from '../controllers/menu.controller';
+import { Router } from 'express'
+import * as menuController from '../controllers/menu.controller'
 
-const router = Router();
+const router = Router()
 
-router.get('/', menuController.findAllMenus);
+router.get('/', menuController.findAllMenus)
 
-router.post('/', menuController.createMenu);
+router.post('/', menuController.createMenu)
 
-router.get('/active', menuController.findAllActiveMenus);
+router.get('/active', menuController.findAllActiveMenus)
 
-router.get('/:id', menuController.findOneMenu);
+router.get('/:id', menuController.findOneMenu)
 
-router.delete('/:id', menuController.deleteMenu);
+router.delete('/:id', menuController.deleteMenu)
 
-router.put('/:id', menuController.updateMenu);
+router.put('/:id', menuController.updateMenu)
 
-export default router;
+router.put('/trash/:id', menuController.sendToTrashMenu)
+
+export default router

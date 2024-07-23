@@ -8,12 +8,10 @@ export const uploadImg = imageHandler.single('image')
 
 export const findAllIngredients = async (req, res, next) => {
   try {
-    const { size, page, name, inTrash = false } = req.query
-
-    const condition = { inTrash }
-
-    if (name) {
-      condition.name = { $regex: new RegExp(name), $options: 'i' }
+    const { size, page, name } = req.query
+    const condition = {
+      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      deletedAt: null,
     }
 
     const { limit, offset } = getPagination(page, size)
@@ -34,7 +32,7 @@ export const findAllIngredients = async (req, res, next) => {
 
 export const createIngredient = async (req, res, next) => {
   // console.log(req.body)
-  const { name, price, stock, active, inTrash } = req.body
+  const { name, price, stock, active } = req.body
 
   // const NO_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1024px-Imagen_no_disponible.svg.png'
   try {
@@ -56,7 +54,7 @@ export const createIngredient = async (req, res, next) => {
       stock,
       image: imageFile,
       active: active || true,
-      inTrash: inTrash || false,
+      deleteAt: null,
     })
 
     const result = await newIngredient.save()
@@ -100,14 +98,14 @@ export const findAllActiveIngredients = async (req, res, next) => {
   }
 }
 
-export const findAllinTrashIngredients = async (req, res, next) => {
-  try {
-    const inTrashIngredients = await Ingredient.find({ inTrash: true })
-    res.json({ inTrashIngredients })
-  } catch (err) {
-    next(err)
-  }
-}
+// export const findAllinTrashIngredients = async (req, res, next) => {
+//   try {
+//     const inTrashIngredients = await Ingredient.find({ inTrash: true })
+//     res.json({ inTrashIngredients })
+//   } catch (err) {
+//     next(err)
+//   }
+// }
 
 export const updateIngredient = async (req, res, next) => {
   const id = req.params.id
@@ -157,5 +155,27 @@ export const deleteAllIngredients = async (req, res, next) => {
     res.status(500).send({ message: 'Error al borrar ingredientes.' })
 
     next()
+  }
+}
+
+export const sendToTrashIngredient = async (req, res, next) => {
+  const id = req.params.id
+  try {
+    const ingredient = await Ingredient.findById(id)
+
+    const newDeletedState = ingredient.deletedAt ? null : new Date()
+
+    const updateIngredient = await Ingredient.findByIdAndUpdate(id, { deletedAt: newDeletedState })
+
+    if (!updateIngredient) {
+      return res.status(404).json({
+        error_message: `The ingredient with id ${id} does not exists.`,
+      })
+    }
+    res.json({
+      message: `Ingredient ${id} send to trash.`,
+    })
+  } catch (err) {
+    next(err)
   }
 }

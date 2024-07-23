@@ -15,6 +15,8 @@ router.delete('/:id', productController.deleteProduct)
 
 router.put('/:id', productController.updateProduct)
 
+router.put('/trash/:id', productController.sendToTrashProduct)
+
 router.delete('/delete-all', productController.deleteAllProducts)
 
 export default router

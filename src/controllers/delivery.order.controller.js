@@ -7,11 +7,10 @@ export const findAllDeliveryOrders = async (req, res, next) => {
   try {
     const { size, page, name } = req.query
 
-    const condition = name
-      ? {
-          name: { $regex: new RegExp(name), $options: 'i' },
-        }
-      : {}
+    const condition = {
+      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      deletedAt: null,
+    }
 
     const { limit, offset } = getPagination(page, size)
 
@@ -69,6 +68,7 @@ export const createDeliveryOrder = async (req, res, next) => {
       deliveryDate: req.body.deliveryDate || new Date(),
 
       active: req.body.active ? req.body.active : true,
+      deletedAt: null,
     })
     const newDeliveryOrder = new DeliveryOrder(newDeliveryOrderData)
 
@@ -126,13 +126,6 @@ export const findAllActiveDeliveryOrders = async (req, res, next) => {
   } catch (err) {
     next(err)
   }
-  // await DeliveryOrder.find({ used: true })
-  //   .then((result) => {
-  //     res.json(result);
-  //   })
-  //   .catch((err) => {
-  //     throw err;
-  //   });
 }
 
 export const updateDeliveryOrder = async (req, res, next) => {
@@ -164,6 +157,28 @@ export const deleteDeliveryOrder = async (req, res, next) => {
     }
     res.json({
       message: `Delivery order with id ${id} was deleted.`,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const sendToTrashDeliveryOrder = async (req, res, next) => {
+  const id = req.params.id
+  try {
+    const deliveryOrder = await DeliveryOrder.findById(id)
+
+    const newDeletedState = deliveryOrder.deletedAt ? null : new Date()
+
+    const updateDeliveryOrder = await DeliveryOrder.findByIdAndUpdate(id, { deletedAt: newDeletedState })
+
+    if (!updateDeliveryOrder) {
+      return res.status(404).json({
+        error_message: `The delivery order with id ${id} does not exists.`,
+      })
+    }
+    res.json({
+      message: `The delivery order ${id} send to trash.`,
     })
   } catch (err) {
     next(err)
