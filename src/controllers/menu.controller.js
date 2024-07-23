@@ -125,6 +125,18 @@ export const deleteMenu = async (req, res, next) => {
   }
 }
 
+export const deleteAllMenus = async (req, res, next) => {
+  try {
+    await Menu.deleteMany({})
+    res.status(200).send({ message: 'All menus was deleted.' })
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).send({ message: 'Error trying delete all menus.' })
+
+    next()
+  }
+}
+
 export const sendToTrashMenu = async (req, res, next) => {
   const id = req.params.id
   try {

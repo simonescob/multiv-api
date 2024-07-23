@@ -179,3 +179,15 @@ export const deleteOrder = async (req, res, next) => {
     next(err)
   }
 }
+
+export const deleteAllOrders = async (req, res, next) => {
+  try {
+    await Order.deleteMany({})
+    res.status(200).send({ message: 'All orders was deleted.' })
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).send({ message: 'Error trying delete all orders.' })
+
+    next()
+  }
+}

@@ -97,40 +97,6 @@ export const findByEmail = async (email) => {
   return user
 }
 
-// export const findAllUsersByRole = async (req, res, next) => {
-//   try {
-//     const { size, page, role } = req.query
-
-//     const condition = role
-//       ? {
-//           role: { $regex: new RegExp(role), $options: 'i' },
-//         }
-//       : {}
-
-//     const { limit, offset } = getPagination(page, size)
-
-//     const data = await User.paginate(condition, {
-//       offset,
-//       limit,
-//       role,
-//     })
-
-//     const dataUsers = data.docs.map((user) => {
-//       user.hashedPassword = undefined
-//       return user
-//     })
-
-//     res.json({
-//       totalItems: data.totalDocs,
-//       users: dataUsers,
-//       totalPages: data.totalPages,
-//       currentPage: data.page - 1,
-//     })
-//   } catch (err) {
-//     next(err)
-//   }
-// }
-
 export const findAllActiveUsers = async (req, res, next) => {
   try {
     const activeUsers = await User.find({ active: true })
@@ -172,5 +138,17 @@ export const deleteUser = async (req, res, next) => {
     })
   } catch (err) {
     next(err)
+  }
+}
+
+export const deleteAllUsers = async (req, res, next) => {
+  try {
+    await User.deleteMany({})
+    res.status(200).send({ message: 'All users was deleted.' })
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).send({ message: 'Error trying delete all users.' })
+
+    next()
   }
 }

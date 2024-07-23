@@ -160,6 +160,18 @@ export const deleteKitchenOrder = async (req, res, next) => {
   }
 }
 
+export const deleteAllKitchenOrders = async (req, res, next) => {
+  try {
+    await KitchenOrder.deleteMany({})
+    res.status(200).send({ message: 'All kitchen orders was deleted.' })
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).send({ message: 'Error trying delete all orders.' })
+
+    next()
+  }
+}
+
 export const sendToTrashKitchenOrder = async (req, res, next) => {
   const id = req.params.id
   try {

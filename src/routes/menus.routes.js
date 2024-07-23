@@ -11,6 +11,8 @@ router.get('/active', menuController.findAllActiveMenus)
 
 router.get('/:id', menuController.findOneMenu)
 
+router.delete('/delete-all', menuController.deleteAllMenus)
+
 router.delete('/:id', menuController.deleteMenu)
 
 router.put('/:id', menuController.updateMenu)

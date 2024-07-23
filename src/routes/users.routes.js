@@ -13,6 +13,8 @@ router.get('/active', userController.findAllActiveUsers)
 
 router.get('/:id', userController.findOneUser)
 
+router.delete('/delete-all', userController.deleteAllUsers)
+
 router.delete('/:id', userController.deleteUser)
 
 router.put('/:id', userController.updateUser)

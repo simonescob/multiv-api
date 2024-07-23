@@ -11,6 +11,8 @@ router.get('/active', deliveryOrderController.findAllActiveDeliveryOrders)
 
 router.get('/:id', deliveryOrderController.findOneDeliveryOrder)
 
+router.delete('/delete-all', deliveryOrderController.deleteAllDeliveryOrders)
+
 router.delete('/:id', deliveryOrderController.deleteDeliveryOrder)
 
 router.put('/:id', deliveryOrderController.updateDeliveryOrder)

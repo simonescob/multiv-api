@@ -129,10 +129,10 @@ export const deleteProduct = async (req, res, next) => {
 export const deleteAllProducts = async (req, res, next) => {
   try {
     await Product.deleteMany({})
-    res.status(200).send({ message: 'Todos los productos han sido borrados.' })
+    res.status(200).send({ message: 'All products was deleted.' })
   } catch (error) {
-    console.error('Error al borrar Productes:', error)
-    res.status(500).send({ message: 'Error al borrar productos.' })
+    console.error('Error trying delete all products:', error)
+    res.status(500).send({ message: 'Error trying delete all products.' })
 
     next()
   }

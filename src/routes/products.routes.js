@@ -11,12 +11,12 @@ router.get('/active', productController.findAllActiveProducts)
 
 router.get('/:id', productController.findOneProduct)
 
+router.delete('/delete-all', productController.deleteAllProducts)
+
 router.delete('/:id', productController.deleteProduct)
 
 router.put('/:id', productController.updateProduct)
 
 router.put('/trash/:id', productController.sendToTrashProduct)
-
-router.delete('/delete-all', productController.deleteAllProducts)
 
 export default router
