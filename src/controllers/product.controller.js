@@ -5,11 +5,14 @@ import { productSchema } from '../libs/validation/yupSchemas'
 
 export const findAllProducts = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query
+    const { size, page, search, isActive } = req.query
+    const name = search
+    const isActiveBool = isActive === 'true' ? true : isActive === 'false' ? false : undefined
 
     const condition = {
       ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
       deletedAt: null,
+      ...(isActiveBool !== undefined && { active: isActiveBool }),
     }
     const { limit, offset } = getPagination(page, size)
 
