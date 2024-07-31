@@ -5,19 +5,20 @@ import { deliveryOrderSchema } from '../libs/validation/yupSchemas'
 
 export const findAllDeliveryOrders = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query
+    const { size, page, search, isActive } = req.query
+    const deliveryOrderNum = search ? parseInt(search) : undefined
+    const isActiveBool = isActive === 'true' ? true : isActive === 'false' ? false : undefined
 
     const condition = {
-      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      ...(deliveryOrderNum !== undefined && !isNaN(deliveryOrderNum) && { deliveryOrderNum }),
       deletedAt: null,
+      ...(isActiveBool !== undefined && { active: isActiveBool }),
     }
-
     const { limit, offset } = getPagination(page, size)
 
     const data = await DeliveryOrder.paginate(condition, {
       offset,
       limit,
-      name,
       populate: [
         {
           path: 'orders',

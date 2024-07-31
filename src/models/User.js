@@ -65,6 +65,10 @@ const userSchema = new Schema(
       maxlength: 30,
       default: 'customer',
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     versionKey: false,

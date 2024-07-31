@@ -5,11 +5,14 @@ import { userSchema } from '../libs/validation/yupSchemas'
 
 export const findAllUsers = async (req, res, next) => {
   try {
-    const { size, page, name, role } = req.query
+    const { size, page, search, role, isActive } = req.query
+    const name = search
+    const isActiveBool = isActive === 'true' ? true : isActive === 'false' ? false : undefined
 
     const condition = {
       ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
       ...(role && { role }),
+      ...(isActiveBool !== undefined && { active: isActiveBool }),
     }
     const { limit, offset } = getPagination(page, size)
 

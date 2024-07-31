@@ -5,11 +5,14 @@ import { kitchenOrderSchema } from '../libs/validation/yupSchemas'
 
 export const findAllKitchenOrders = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query
+    const { size, page, search, isActive } = req.query
+    const kitchenOrderNum = search ? parseInt(search) : undefined
+    const isActiveBool = isActive === 'true' ? true : isActive === 'false' ? false : undefined
 
     const condition = {
-      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      ...(kitchenOrderNum !== undefined && !isNaN(kitchenOrderNum) && { kitchenOrderNum }),
       deletedAt: null,
+      ...(isActiveBool !== undefined && { active: isActiveBool }),
     }
 
     const { limit, offset } = getPagination(page, size)
@@ -17,7 +20,7 @@ export const findAllKitchenOrders = async (req, res, next) => {
     const data = await KitchenOrder.paginate(condition, {
       offset,
       limit,
-      name,
+
       populate: [
         {
           path: 'orders',

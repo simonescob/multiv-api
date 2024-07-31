@@ -5,11 +5,14 @@ import { orderSchema } from '../libs/validation/yupSchemas'
 
 export const findAllOrders = async (req, res, next) => {
   try {
-    const { size, page, name } = req.query
+    const { size, page, search, isActive } = req.query
+    const orderNum = search ? parseInt(search) : undefined
+    const isActiveBool = isActive === 'true' ? true : isActive === 'false' ? false : undefined
 
     const condition = {
-      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      ...(orderNum !== undefined && !isNaN(orderNum) && { orderNum }),
       deletedAt: null,
+      ...(isActiveBool !== undefined && { active: isActiveBool }),
     }
 
     const { limit, offset } = getPagination(page, size)
@@ -17,7 +20,6 @@ export const findAllOrders = async (req, res, next) => {
     const data = await Order.paginate(condition, {
       offset,
       limit,
-      name,
       populate: [
         {
           path: 'product',
