@@ -8,13 +8,13 @@ export const findAllProducts = async (req, res, next) => {
     const { size, page, search, isActive } = req.query
     const name = search
     const isActiveBool = isActive === 'true' ? true : isActive === 'false' ? false : undefined
-
+    // Product.createIndexes({ name: 'text' });
     const condition = {
-      ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
+      ...(name && { name: { $regex: new RegExp(search), $options: 'i' } }),
       deletedAt: null,
       ...(isActiveBool !== undefined && { active: isActiveBool }),
     }
-    const { limit, offset } = getPagination(page, size)
+    const { limit, offset } = getPagination(page, size);
 
     const data = await Product.paginate(condition, {
       offset,
@@ -25,6 +25,7 @@ export const findAllProducts = async (req, res, next) => {
         select: 'name',
       },
     })
+    console.log('data:', data);
     const products = data.docs
 
     res.json({
