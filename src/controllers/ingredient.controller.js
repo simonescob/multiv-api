@@ -14,18 +14,18 @@ export const findAllIngredients = async (req, res, next) => {
 
     const condition = {
       ...(name && { name: { $regex: new RegExp(name), $options: 'i' } }),
-      deletedAt: null,
       ...(isActiveBool !== undefined && { active: isActiveBool }),
+      deletedAt: null,
     }
 
     const { limit, offset } = getPagination(page, size)
-    const data = await Ingredient.paginate(condition, { offset, limit, sort: { createdAt: -1 } })
-    if (condition.name) {
-      const ingredients = await Ingredient.find({ name: { $regex: new RegExp(name), $options: 'i' } })
-        .sort({ createdAt: -1 })
-      // console.log('ingredients:', ingredients)
-      data.docs = ingredients;
-    }
+    const data = await Ingredient.paginate(condition, { 
+      offset, 
+      limit, 
+      sort: { createdAt: -1 },
+      useEstimatedCount: false,
+      forceCountFn: true
+    })
 
     res.json({
       totalItems: data.totalDocs,
@@ -151,6 +151,7 @@ export const deleteIngredient = async (req, res, next) => {
     }
     res.json({
       message: `Ingredient with id: ${id} was deleted.`,
+      error: false,
     })
   } catch (err) {
     next(err)
@@ -169,7 +170,7 @@ export const deleteAllIngredients = async (req, res, next) => {
 }
 
 export const sendToTrashIngredient = async (req, res, next) => {
-  const id = req.params.id
+  const id = req.params.id;
   try {
     const ingredient = await Ingredient.findById(id)
 
