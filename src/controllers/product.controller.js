@@ -8,11 +8,11 @@ export const findAllProducts = async (req, res, next) => {
     const { size, page, search, isActive } = req.query
     const name = search
     const isActiveBool = isActive === 'true' ? true : isActive === 'false' ? false : undefined
-    // Product.createIndexes({ name: 'text' });
+    
     const condition = {
       ...(name && { name: { $regex: new RegExp(search), $options: 'i' } }),
-      deletedAt: null,
       ...(isActiveBool !== undefined && { active: isActiveBool }),
+      deletedAt: null,
     }
     const { limit, offset } = getPagination(page, size);
 
@@ -20,12 +20,12 @@ export const findAllProducts = async (req, res, next) => {
       offset,
       limit,
       name,
+      sort: { createdAt: -1 },
       populate: {
         path: 'ingredients.ingredient',
         select: 'name',
       },
     })
-    console.log('data:', data);
     const products = data.docs
 
     res.json({
