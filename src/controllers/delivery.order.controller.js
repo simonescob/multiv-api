@@ -11,14 +11,15 @@ export const findAllDeliveryOrders = async (req, res, next) => {
 
     const condition = {
       ...(deliveryOrderNum !== undefined && !isNaN(deliveryOrderNum) && { deliveryOrderNum }),
-      deletedAt: null,
       ...(isActiveBool !== undefined && { active: isActiveBool }),
+      deletedAt: null,
     }
     const { limit, offset } = getPagination(page, size)
 
     const data = await DeliveryOrder.paginate(condition, {
       offset,
       limit,
+      sort: { createdAt: -1 }, // Sort by latest first
       populate: [
         {
           path: 'orders',
@@ -30,7 +31,7 @@ export const findAllDeliveryOrders = async (req, res, next) => {
             },
             {
               path: 'product',
-              select: 'name', // Incluir el campo 'name' del usuario
+              select: 'name',
             },
           ],
         },
@@ -40,6 +41,14 @@ export const findAllDeliveryOrders = async (req, res, next) => {
         },
       ],
     })
+
+    // // If search was provided, filter results to match exactly
+    // let filteredDocs = data.docs
+    // if (deliveryOrderNum !== undefined && !isNaN(deliveryOrderNum)) {
+    //   filteredDocs = data.docs.filter(order => 
+    //     order.deliveryOrderNum === deliveryOrderNum
+    //   )
+    // }
 
     res.json({
       totalItems: data.totalDocs,

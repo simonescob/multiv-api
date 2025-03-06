@@ -26,6 +26,12 @@ export const findAllIngredients = async (req, res, next) => {
       useEstimatedCount: false,
       forceCountFn: true
     })
+    if (condition.name) {
+      const ingredients = await Ingredient.find({ name: { $regex: new RegExp(name), $options: 'i' } })
+        .sort({ createdAt: -1 })
+      // console.log('ingredients:', ingredients)
+      data.docs = ingredients;
+    }
 
     res.json({
       totalItems: data.totalDocs,

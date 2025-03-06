@@ -26,11 +26,16 @@ export const findAllProducts = async (req, res, next) => {
         select: 'name',
       },
     })
-    const products = data.docs
+    if (condition.name) {
+      const products = await Product.find({ name: { $regex: new RegExp(name), $options: 'i' } })
+        .sort({ createdAt: -1 })
+      data.docs = products;
+    }
+    // const products = data.docs
 
     res.json({
       totalItems: data.totalDocs,
-      products,
+      products: data.docs,
       totalPages: data.totalPages,
       currentPage: data.page - 1,
     })
