@@ -11,17 +11,23 @@ const menuSchema = new Schema(
     },
     name: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
-      maxlenght: 100,
+      maxlength: 100,
     },
     comments: {
       type: String,
-      require: false,
+      required: false,
       trim: true,
-      maxlenght: 100,
+      maxlength: 100,
     },
-    products: [
+    lunch: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Product',
+      },
+    ],
+    dinner: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Product',

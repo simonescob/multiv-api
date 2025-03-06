@@ -21,10 +21,16 @@ export const findAllMenus = async (req, res, next) => {
       offset,
       limit,
       name,
-      populate: {
-        path: 'products',
-        select: 'name _id productNum active price', // Especifica los campos que deseas poblar del documento 'product'
-      },
+      populate: [
+        {
+          path: 'lunch',
+          select: 'name _id productNum active price',
+        },
+        {
+          path: 'dinner',
+          select: 'name _id productNum active price',
+        }
+      ],
     })
 
     res.json({
@@ -47,7 +53,8 @@ export const createMenu = async (req, res, next) => {
       menuNum: count,
       name: req.body.name,
       comments: req.body.comments,
-      products: req.body.products,
+      lunch: req.body.lunch,
+      dinner: req.body.dinner,
       active: req.body.active ? req.body.active : true,
       deletedAt: null,
     })
@@ -67,10 +74,16 @@ export const findOneMenu = async (req, res, next) => {
   const { id } = req.params
 
   try {
-    const menu = await Menu.findById(id).populate({
-      path: 'products',
-      select: 'name _id productNum active price',
-    })
+    const menu = await Menu.findById(id).populate([
+      {
+        path: 'lunch',
+        select: 'name _id productNum active price',
+      },
+      {
+        path: 'dinner',
+        select: 'name _id productNum active price',
+      }
+    ])
 
     if (!menu) {
       return res.status(404).json({
@@ -86,7 +99,16 @@ export const findOneMenu = async (req, res, next) => {
 
 export const findAllActiveMenus = async (req, res, next) => {
   try {
-    const activeMenus = await Menu.find({ active: true }).populate('products')
+    const activeMenus = await Menu.find({ active: true }).populate([
+      {
+        path: 'lunch',
+        select: 'name _id productNum active price',
+      },
+      {
+        path: 'dinner',
+        select: 'name _id productNum active price',
+      }
+    ])
     res.json({ activeMenus })
   } catch (err) {
     next(err)
