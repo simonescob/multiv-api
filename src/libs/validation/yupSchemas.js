@@ -96,7 +96,7 @@ export const menuSchema = yup.object().shape({
   lunch: objectIdArrayExistsValidation('producto', Product),
   dinner: objectIdArrayExistsValidation('producto', Product),
   comments: yup.string().trim().max(100),
-  active: yup.boolean().default(true),
+  active: yup.boolean().default(false),
 })
 export const deliveryOrderSchema = yup.object().shape({
   user: objectIdExistsValidation('usuario', User).test('is-user-delivery', 'El usuario no tiene el rol delivery', async (value) => {
