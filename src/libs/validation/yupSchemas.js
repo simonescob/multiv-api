@@ -92,11 +92,16 @@ export const kitchenOrderSchema = yup.object().shape({
   active: yup.boolean().default(true),
 })
 export const menuSchema = yup.object().shape({
-  name: yup.string().required('Nombre requerido'),
-  lunch: objectIdArrayExistsValidation('producto', Product),
-  dinner: objectIdArrayExistsValidation('producto', Product),
-  comments: yup.string().trim().max(100),
-  active: yup.boolean().default(false),
+  name: yup.string().required('Nombre requerido').trim().max(100),
+  menuOptions: yup.array().of(
+    yup.object().shape({
+      name: yup.string().trim().max(100),
+      lunch: objectIdArrayExistsValidation('producto', Product),
+      dinner: objectIdArrayExistsValidation('producto', Product),
+      active: yup.boolean().default(true),
+      deletedAt: yup.date().nullable().default(null)
+    })
+  )
 })
 export const deliveryOrderSchema = yup.object().shape({
   user: objectIdExistsValidation('usuario', User).test('is-user-delivery', 'El usuario no tiene el rol delivery', async (value) => {

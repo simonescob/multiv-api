@@ -3,44 +3,41 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 
 const menuSchema = new Schema(
   {
-    menuNum: {
-      type: Number,
-      required: true,
-      trim: true,
-      maxlength: 10,
-    },
     name: {
       type: String,
       required: true,
       trim: true,
       maxlength: 100,
     },
-    comments: {
-      type: String,
-      required: false,
-      trim: true,
-      maxlength: 100,
-    },
-    lunch: [
+    menuOptions: [
       {
-        type: Schema.Types.ObjectId,
-        ref: 'Product',
-      },
-    ],
-    dinner: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Product',
-      },
-    ],
-    active: {
-      type: Boolean,
-      default: true,
-    },
-    deletedAt: {
-      type: Date,
-      default: null,
-    },
+        name: {
+          type: String,
+          trim: true,
+          maxlength: 100,
+        },
+        lunch: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: 'Product',
+          },
+        ],
+        dinner: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: 'Product',
+          },
+        ],
+        active: {
+          type: Boolean,
+          default: true,
+        },
+        deletedAt: {
+          type: Date,
+          default: null,
+        },
+      }
+    ]
   },
   {
     versionKey: false,

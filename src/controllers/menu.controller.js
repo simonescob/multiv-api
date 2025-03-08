@@ -23,11 +23,11 @@ export const findAllMenus = async (req, res, next) => {
       name,
       populate: [
         {
-          path: 'lunch',
+          path: 'menuOptions.lunch',
           select: 'name _id productNum active price',
         },
         {
-          path: 'dinner',
+          path: 'menuOptions.dinner',
           select: 'name _id productNum active price',
         }
       ],
@@ -49,15 +49,18 @@ export const createMenu = async (req, res, next) => {
     await menuSchema.validate(req.body, { abortEarly: true })
 
     const count = await setCounter('Menu')
-    const newMenuData = new Menu({
-      menuNum: count,
+    const newMenuData = {
       name: req.body.name,
-      comments: req.body.comments,
-      lunch: req.body.lunch,
-      dinner: req.body.dinner,
-      active: req.body.active ? req.body.active : true,
-      deletedAt: null,
-    })
+      menuOptions: req.body.menuOptions || [
+        {
+          name: req.body.name,
+          lunch: req.body.lunch || [],
+          dinner: req.body.dinner || [],
+          active: req.body.active !== undefined ? req.body.active : true,
+          deletedAt: null,
+        }
+      ],
+    }
 
     const newMenu = new Menu(newMenuData)
 
@@ -76,11 +79,11 @@ export const findOneMenu = async (req, res, next) => {
   try {
     const menu = await Menu.findById(id).populate([
       {
-        path: 'lunch',
+        path: 'menuOptions.lunch',
         select: 'name _id productNum active price',
       },
       {
-        path: 'dinner',
+        path: 'menuOptions.dinner',
         select: 'name _id productNum active price',
       }
     ])
@@ -101,11 +104,11 @@ export const findAllActiveMenus = async (req, res, next) => {
   try {
     const activeMenus = await Menu.find({ active: true }).populate([
       {
-        path: 'lunch',
+        path: 'menuOptions.lunch',
         select: 'name _id productNum active price',
       },
       {
-        path: 'dinner',
+        path: 'menuOptions.dinner',
         select: 'name _id productNum active price',
       }
     ])
