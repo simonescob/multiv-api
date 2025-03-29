@@ -5,7 +5,7 @@ const orderSchema = new Schema(
   {
     orderNum: {
       type: Number,
-      required: true,
+      required: false,
       trim: true,
       maxlength: 10,
     },
@@ -19,7 +19,7 @@ const orderSchema = new Schema(
     },
     price: {
       type: Number,
-      required: true,
+      required: false,
       trim: true,
       maxlength: 60,
     },
@@ -35,15 +35,12 @@ const orderSchema = new Schema(
     cookDate: {
       type: Date,
     },
-    cooked: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ['cooked', 'cooking', 'not_cooked'],
+      default: 'not_cooked',
     },
-    cooking: {
-      type: Boolean,
-      default: false,
-    },
-    delivered: {
+    cooked: { 
       type: Boolean,
       default: false,
     },

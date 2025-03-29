@@ -193,3 +193,44 @@ export const deleteAllOrders = async (req, res, next) => {
     next()
   }
 }
+
+export const createMultipleOrders = async (req, res, next) => {
+  const ordersData = req.body;
+
+  try {
+    const createdOrders = [];
+
+    for (const orderData of ordersData) {
+      const { lunch, dinner } = orderData;
+
+      // Create orders for lunch
+      for (let i = 0; i < lunch.quantity; i++) {
+        const newOrder = new Order({
+          product: lunch._id,
+          quantity: 1, // Assuming each order represents one quantity
+          active: true,
+          // Add other necessary fields here
+        });
+        createdOrders.push(await newOrder.save());
+      }
+
+      // Create orders for dinner
+      for (let i = 0; i < dinner.quantity; i++) {
+        const newOrder = new Order({
+          product: dinner._id,
+          quantity: 1, // Assuming each order represents one quantity
+          active: true,
+          // Add other necessary fields here
+        });
+        createdOrders.push(await newOrder.save());
+      }
+    }
+
+    res.status(201).json({ createdOrders });
+  } catch (error) {
+    console.error('Error creating orders:', error);
+    res.status(400).json({ error: 'Error creating orders', details: error });
+  }
+}
+
+

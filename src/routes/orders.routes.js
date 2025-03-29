@@ -19,4 +19,6 @@ router.put('/:id', orderController.updateOrder)
 
 router.put('/trash/:id', orderController.sendToTrashOrder)
 
+router.post('/multiple', orderController.createMultipleOrders)
+
 export default router
