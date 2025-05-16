@@ -6,17 +6,13 @@ import * as userController from '../controllers/user.controller'
 const router = Router()
 
 router.post('/', userController.createUser)
-
 router.get('/', userController.findAllUsers)
-
 router.get('/active', userController.findAllActiveUsers)
-
 router.get('/:id', userController.findOneUser)
-
 router.delete('/delete-all', userController.deleteAllUsers)
-
 router.delete('/:id', userController.deleteUser)
-
 router.put('/:id', userController.updateUser)
+
+router.get('/roles', userController.findAllRoles)
 
 export default router

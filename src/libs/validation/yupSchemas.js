@@ -125,7 +125,7 @@ export const userSchema = yup.object().shape({
   username: yup
     .string()
     .matches(/^[a-zA-Z0-9]*$/, 'El nombre de usuario solo puede contener letras y números')
-    .min(6, 'Nombre de usuario de más de 6 caracteres')
+    .min(4, 'Nombre de usuario de más de 4 caracteres')
     .max(16, 'Nombre de usuario de no más de 16 caracteres')
     .required('Nombre de usuario requerido')
     .test('is-unique', 'El nombre de usuario ya está en uso', async (value) => {
@@ -146,7 +146,7 @@ export const userSchema = yup.object().shape({
   phone: yup.string().required('Teléfono es requerido').max(30, 'Teléfono no puede superar 30 caracteres'),
   address: yup.string().max(60, 'Dirección no puede superar 60 caracteres'),
   birth: yup.date('Fecha de nacimiento debe ser una fecha válida'),
-  location: yup.array().of(yup.number().typeError('Las coordenadas deben ser númericas').required('Coordenadas requeridas')).length(2, 'Location debe tener 2 elementos de coordenadas'),
+  location: yup.string().max(100, 'Location no puede superar 100 caracteres'),
   role: yup.string().oneOf(['admin', 'customer', 'kitchen', 'delivery'], 'El rol no es correcto'),
 })
 

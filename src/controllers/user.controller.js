@@ -155,3 +155,12 @@ export const deleteAllUsers = async (req, res, next) => {
     next()
   }
 }
+
+export const findAllRoles = async (req, res, next) => {
+  try {
+    const roles = ['admin', 'customer', 'kitchen', 'delivery'];
+    res.json(roles); // Replace the console.log with this line
+  } catch (err) {
+    next(err);
+  }
+};
