@@ -7,9 +7,15 @@ const jwtSecret = config.jwtSecret
 
 export const loginUser = async (req, res) => {
   try {
-    const { username, password } = req.body
+    const { username, email, password } = req.body
 
-    const user = await User.findOne({ username })
+    if (!username && !email) {
+      return res.status(400).json({ error: 'Se requiere nombre de usuario o correo electrónico.' })
+    }
+
+    const user = await User.findOne({
+      $or: [{ username }, { email }],
+    })
 
     if (!user) {
       return res.status(401).json({ error: 'El Usuario no existe.' })
