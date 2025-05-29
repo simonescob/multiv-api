@@ -19,6 +19,7 @@ export const findAllUsers = async (req, res, next) => {
     const data = await User.paginate(condition, {
       offset,
       limit,
+      sort: { createdAt: -1 } // Add sorting by createdAt in descending order
     })
 
     const dataUsers = data.docs.map((user) => {
