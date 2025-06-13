@@ -68,7 +68,7 @@ export const createKitchenOrder = async (req, res, next) => {
       comments: req.body.comments,
       cooked: false,
       cooking: false,
-      cookDate: req.body.cookDate || new Date(),
+      preparationDate: req.body.preparationDate || new Date(),
       active: req.body.active ? req.body.active : true,
       deletedAt: null,
     })

@@ -32,7 +32,7 @@ const kitchenOrderSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    cookDate: {
+    preparationDate: {
       type: Date,
     },
     active: {
