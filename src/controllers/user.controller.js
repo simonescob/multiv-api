@@ -165,3 +165,37 @@ export const findAllRoles = async (req, res, next) => {
     next(err);
   }
 };
+
+export const changePasswordByEmail = async (req, res, next) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    // Validate the email and new password
+    if (!email || !newPassword) {
+      return res.status(400).json({ error_message: 'Email and new password are required.' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Find the user by email and update the password
+    const updatedUser = await User.findOneAndUpdate(
+      { email },
+      { hashedPassword },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        error_message: `No user found with email ${email}.`,
+      });
+    }
+
+    res.json({
+      message: `Password for user with email ${email} has been updated.`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+

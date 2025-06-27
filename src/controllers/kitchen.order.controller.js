@@ -196,3 +196,38 @@ export const sendToTrashKitchenOrder = async (req, res, next) => {
     next(err)
   }
 }
+
+export const KitchenOrdersByUser = async (req, res, next) => {
+  const { userId } = req.params; // Assuming userId is passed as a URL parameter
+
+  try {
+    // Check if the user exists
+    const userExists = await KitchenOrder.findOne({ user: userId });
+    
+    if (!userExists) {
+      return res.status(404).json({
+        error_message: `User with id ${userId} does not exist.`,
+      });
+    }
+
+    const kitchenOrders = await KitchenOrder.find({ user: userId }).populate({
+      path: 'orders',
+      populate: {
+        path: 'product',
+        select: 'name', // Include the name of the product
+      },
+    });
+
+    if (!kitchenOrders.length) {
+      return res.status(404).json({
+        error_message: `User with id ${userId} exists, but has no kitchen orders.`,
+      });
+    }
+
+    res.json(kitchenOrders);
+  } catch (err) {
+    next(err);
+  }
+}
+
+
