@@ -20,6 +20,7 @@ export const findAllKitchenOrders = async (req, res, next) => {
     const data = await KitchenOrder.paginate(condition, {
       offset,
       limit,
+      sort: { createdAt: -1 }, // Add this line to sort by createdAt in descending order
 
       populate: [
         {
@@ -105,7 +106,7 @@ export const findOneKitchenOrder = async (req, res, next) => {
       })
       .populate({
         path: 'user',
-        select: 'usernname name lastname',
+        select: 'username name lastname',
       })
     if (!order) {
       return res.status(404).json({
