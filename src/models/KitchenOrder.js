@@ -24,13 +24,10 @@ const kitchenOrderSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    cooked: {
-      type: Boolean,
-      default: false,
-    },
-    cooking: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ['pending', 'preparing', 'ready_for_delivery', 'delivered'],
+      default: 'pending',
     },
     preparationDate: {
       type: Date,

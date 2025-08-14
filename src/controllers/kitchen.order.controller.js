@@ -200,6 +200,7 @@ export const sendToTrashKitchenOrder = async (req, res, next) => {
 
 export const KitchenOrdersByUser = async (req, res, next) => {
   const { userId } = req.params; // Assuming userId is passed as a URL parameter
+  let { startDate, endDate, range } = req.query; // Get startDate, endDate, and range from query parameters
 
   try {
     // Check if the user exists
@@ -211,7 +212,51 @@ export const KitchenOrdersByUser = async (req, res, next) => {
       });
     }
 
-    const kitchenOrders = await KitchenOrder.find({ user: userId }).populate({
+    const dateCondition = {};
+    const now = new Date();
+
+    if (range) {
+      switch (range) {
+        case '1_day':
+          startDate = new Date(now.setDate(now.getDate() - 1)).toISOString();
+          endDate = new Date().toISOString();
+          break;
+        case '3_days':
+          startDate = new Date(now.setDate(now.getDate() - 3)).toISOString();
+          endDate = new Date().toISOString();
+          break;
+        case '1_week':
+          startDate = new Date(now.setDate(now.getDate() - 7)).toISOString();
+          endDate = new Date().toISOString();
+          break;
+        case '1_month':
+          startDate = new Date(now.setMonth(now.getMonth() - 1)).toISOString();
+          endDate = new Date().toISOString();
+          break;
+        default:
+          // If range is provided but not recognized, do nothing or handle as error
+          break;
+      }
+    }
+
+    if (startDate) {
+      dateCondition.$gte = new Date(startDate);
+    }
+    if (endDate) {
+      dateCondition.$lte = new Date(endDate);
+    }
+
+    const queryCondition = { user: userId };
+    if (Object.keys(dateCondition).length > 0) {
+      queryCondition.preparationDate = dateCondition;
+    }
+
+    const kitchenOrders = await KitchenOrder.find(queryCondition)
+    .populate({
+      path: 'user',
+      select: 'username name lastname', // Populate user details
+    })
+    .populate({
       path: 'orders',
       populate: {
         path: 'product',
@@ -221,7 +266,7 @@ export const KitchenOrdersByUser = async (req, res, next) => {
 
     if (!kitchenOrders.length) {
       return res.status(404).json({
-        error_message: `User with id ${userId} exists, but has no kitchen orders.`,
+        error_message: `User with id ${userId} exists, but has no kitchen orders for the specified date range.`,
       });
     }
 
