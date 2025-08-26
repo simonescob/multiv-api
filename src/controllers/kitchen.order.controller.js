@@ -276,4 +276,39 @@ export const KitchenOrdersByUser = async (req, res, next) => {
   }
 }
 
+/**
+ * Return flattened orders assigned to a kitchen user (no date filtering).
+ * Each item: { _id, cooked, active, product: { _id, name, active } }
+ */
+export const getOrdersAssignedToUserSimple = async (userId) => {
+  const kitchenOrders = await KitchenOrder.find({ user: userId })
+    .populate({
+      path: 'orders',
+      select: 'cooked active _id product',
+      populate: {
+        path: 'product',
+        select: 'name active',
+      },
+    })
 
+  const options = kitchenOrders.flatMap((ko) =>
+    (ko.orders || []).map((o) => ({
+      value: o.product ? o.product._id : o._id,
+      name: o.product ? o.product.name : (o._id && o._id.toString ? o._id.toString() : o._id),
+      cooked: o.cooked,
+      active: o.active,
+    }))
+  )
+
+  return options
+}
+
+export const getOrdersAssignedToUserSimpleHandler = async (req, res, next) => {
+  const { userId } = req.params
+  try {
+    const orders = await getOrdersAssignedToUserSimple(userId)
+    res.json(orders)
+  } catch (err) {
+    next(err)
+  }
+}

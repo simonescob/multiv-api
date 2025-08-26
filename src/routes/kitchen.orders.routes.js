@@ -12,5 +12,6 @@ router.delete('/:id', kitchenOrderController.deleteKitchenOrder)
 router.put('/:id', kitchenOrderController.updateKitchenOrder)
 router.put('/trash/:id', kitchenOrderController.sendToTrashKitchenOrder)
 router.get('/user/:userId', kitchenOrderController.KitchenOrdersByUser)
+router.get('/user/:userId/simple', kitchenOrderController.getOrdersAssignedToUserSimpleHandler)
 
 export default router
