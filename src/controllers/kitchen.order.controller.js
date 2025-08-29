@@ -280,16 +280,23 @@ export const KitchenOrdersByUser = async (req, res, next) => {
  * Return flattened orders assigned to a kitchen user (no date filtering).
  * Each item: { _id, cooked, active, product: { _id, name, active } }
  */
-export const getOrdersAssignedToUserSimple = async (userId) => {
-  const kitchenOrders = await KitchenOrder.find({ user: userId })
-    .populate({
-      path: 'orders',
-      select: 'cooked active _id product',
-      populate: {
-        path: 'product',
-        select: 'name active',
-      },
-    })
+export const getOrdersAssignedToUserSimple = async (userId, kitchenOrderId = null) => {
+  const populateConfig = {
+    path: 'orders',
+    select: 'cooked active _id product',
+    populate: {
+      path: 'product',
+      select: 'name active',
+    },
+  }
+
+  let kitchenOrders
+  if (kitchenOrderId) {
+    const ko = await KitchenOrder.findOne({ _id: kitchenOrderId, user: userId }).populate(populateConfig)
+    kitchenOrders = ko ? [ko] : []
+  } else {
+    kitchenOrders = await KitchenOrder.find({ user: userId }).populate(populateConfig)
+  }
 
   const options = kitchenOrders.flatMap((ko) =>
     (ko.orders || []).map((o) => ({
@@ -304,9 +311,12 @@ export const getOrdersAssignedToUserSimple = async (userId) => {
 }
 
 export const getOrdersAssignedToUserSimpleHandler = async (req, res, next) => {
-  const { userId } = req.params
+  const { userId, kitchenOrderId: paramKitchenOrderId } = req.params
+  const { kitchenOrderId: queryKitchenOrderId } = req.query
+  const kitchenOrderId = paramKitchenOrderId || queryKitchenOrderId
+
   try {
-    const orders = await getOrdersAssignedToUserSimple(userId)
+    const orders = await getOrdersAssignedToUserSimple(userId, kitchenOrderId)
     res.json(orders)
   } catch (err) {
     next(err)

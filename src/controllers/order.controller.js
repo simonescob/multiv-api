@@ -2,6 +2,8 @@ import Order from '../models/Order'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
 import { orderSchema } from '../libs/validation/yupSchemas'
+import Product from '../models/Product'
+import User from '../models/User'
 
 export const findAllOrders = async (req, res, next) => {
   try {
@@ -230,6 +232,78 @@ export const createMultipleOrders = async (req, res, next) => {
   } catch (error) {
     console.error('Error creating orders:', error);
     res.status(400).json({ error: 'Error creating orders', details: error });
+  }
+}
+
+export const findOrdersByText = async (req, res, next) => {
+  try {
+    const { size, page, search, isActive } = req.query
+    const isActiveBool = isActive === 'true' ? true : isActive === 'false' ? false : undefined
+
+    // If no search provided, fallback to the general list behavior
+    if (!search || search.trim() === '') {
+      return findAllOrders(req, res, next)
+    }
+
+    const { limit, offset } = getPagination(page, size)
+    const regex = new RegExp(search, 'i')
+
+    const orConditions = []
+
+    // numeric orderNum match
+    const orderNum = parseInt(search)
+    if (!isNaN(orderNum)) {
+      orConditions.push({ orderNum })
+    }
+
+    // comments partial match
+    orConditions.push({ comments: { $regex: regex } })
+
+    // find products matching name
+    const matchedProducts = await Product.find({ name: { $regex: regex }, deletedAt: null }).select('_id')
+    if (matchedProducts && matchedProducts.length) {
+      const productIds = matchedProducts.map((p) => p._id)
+      orConditions.push({ product: { $in: productIds } })
+    }
+
+    // find users matching username, name or lastname
+    const matchedUsers = await User.find({
+      $or: [{ username: { $regex: regex } }, { name: { $regex: regex } }, { lastname: { $regex: regex } }],
+    }).select('_id')
+    if (matchedUsers && matchedUsers.length) {
+      const userIds = matchedUsers.map((u) => u._id)
+      orConditions.push({ user: { $in: userIds } })
+    }
+
+    const condition = {
+      deletedAt: null,
+      ...(isActiveBool !== undefined && { active: isActiveBool }),
+      ...(orConditions.length && { $or: orConditions }),
+    }
+
+    const data = await Order.paginate(condition, {
+      offset,
+      limit,
+      populate: [
+        {
+          path: 'product',
+          select: 'name _id productNum active price',
+        },
+        {
+          path: 'user',
+          select: 'username _id name lastname',
+        },
+      ],
+    })
+
+    res.json({
+      totalItems: data.totalDocs,
+      orders: data.docs,
+      totalPages: data.totalPages,
+      currentPage: data.page - 1,
+    })
+  } catch (err) {
+    next(err)
   }
 }
 
