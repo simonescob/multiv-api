@@ -259,8 +259,13 @@ export const findOrdersByText = async (req, res, next) => {
     // comments partial match
     orConditions.push({ comments: { $regex: regex } })
 
-    // find products matching name
-    const matchedProducts = await Product.find({ name: { $regex: regex }, deletedAt: null }).select('_id')
+    // find products matching name, excluding "carne" case-insensitively
+    const matchedProducts = await Product.find({
+      $and: [
+        { name: { $regex: regex } },
+      ],
+      deletedAt: null
+    }).select('_id')
     if (matchedProducts && matchedProducts.length) {
       const productIds = matchedProducts.map((p) => p._id)
       orConditions.push({ product: { $in: productIds } })
