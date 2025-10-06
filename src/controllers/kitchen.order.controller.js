@@ -100,7 +100,11 @@ export const findOneKitchenOrder = async (req, res, next) => {
           },
           {
             path: 'product',
-            select: 'name', // Incluir el campo 'name' del usuario
+            select: 'name ingredients',
+            populate: {
+              path: 'ingredients.ingredient',
+              select: 'name',
+            },
           },
         ],
       })

@@ -146,6 +146,7 @@ export const deleteAllProducts = async (req, res, next) => {
     next()
   }
 }
+
 export const sendToTrashProduct = async (req, res, next) => {
   const id = req.params.id
   try {
