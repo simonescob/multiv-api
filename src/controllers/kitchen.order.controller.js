@@ -326,3 +326,68 @@ export const getOrdersAssignedToUserSimpleHandler = async (req, res, next) => {
     next(err)
   }
 }
+
+export const updateOrderState = async (req, res, next) => {
+  const { id } = req.params
+  const { status } = req.body
+
+  try {
+    // Validate that status is provided and is a valid enum value
+    if (!status) {
+      return res.status(400).json({
+        error_message: 'Status is required for state update.',
+      })
+    }
+
+    // Check if the provided status is valid according to the model
+    const validStatuses = ['pending', 'preparing', 'ready_for_delivery', 'delivered']
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        error_message: `Invalid status. Valid statuses are: ${validStatuses.join(', ')}`,
+      })
+    }
+
+    const updatedOrder = await KitchenOrder.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true, runValidators: true } // Return updated document and run schema validators
+    ).populate({
+      path: 'orders',
+      select: 'user _id orderNum active price comments product deliveryDate cooking cooked',
+      populate: [
+        {
+          path: 'user',
+          select: 'name lastname username',
+        },
+        {
+          path: 'product',
+          select: 'name active',
+        },
+      ],
+    }).populate({
+      path: 'user',
+      select: 'name lastname username',
+    })
+
+    if (!updatedOrder) {
+      return res.status(404).json({
+        error_message: `Kitchen order with id ${id} does not exist.`,
+      })
+    }
+
+    res.json({
+      message: `Kitchen order ${id} state updated successfully.`,
+      order: updatedOrder,
+    })
+  } catch (err) {
+    // Handle validation errors from mongoose
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map(error => error.message)
+      return res.status(400).json({
+        error_message: 'Validation error',
+        details: errors,
+      })
+    }
+    next(err)
+  }
+}
