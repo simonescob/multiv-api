@@ -59,7 +59,6 @@ export const createProduct = async (req, res, next) => {
       productNum: count,
       name: req.body.name,
       ingredients: arrayIngredients,
-      price: req.body.price,
       description: req.body.description,
       active: req.body.active ? req.body.active : true,
     })

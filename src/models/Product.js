@@ -20,12 +20,6 @@ const productSchema = new Schema(
       trim: true,
       maxlength: 100,
     },
-    price: {
-      type: Number,
-      required: true,
-      trim: true,
-      maxlength: 60,
-    },
     ingredients: [
       {
         ingredient: {

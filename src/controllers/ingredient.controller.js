@@ -54,6 +54,15 @@ export const createIngredient = async (req, res, next) => {
   try {
     await ingredientSchema.validate(req.body, { abortEarly: true })
 
+    // Verificar si ya existe un ingrediente con el mismo nombre (insensible a mayúsculas)
+    const existingIngredient = await Ingredient.findOne({
+      name: { $regex: new RegExp(`^${name}$`, 'i') },
+      deletedAt: null
+    })
+    if (existingIngredient) {
+      return res.status(400).json({ error: 'Un ingrediente con este nombre ya existe' })
+    }
+
     const imageFile = req.file
       ? {
           filename: req.file.filename ? req.file.filename : undefined,
@@ -130,6 +139,18 @@ export const updateIngredient = async (req, res, next) => {
     req.body = { ...req.body, active: false }
   }
 
+  // Verificar si el nombre se está actualizando y si ya existe en otro ingrediente
+  if (req.body.name) {
+    const existingIngredient = await Ingredient.findOne({
+      name: { $regex: new RegExp(`^${req.body.name}$`, 'i') },
+      deletedAt: null,
+      _id: { $ne: id }
+    })
+    if (existingIngredient) {
+      return res.status(400).json({ error: 'Un ingrediente con este nombre ya existe' })
+    }
+  }
+
   try {
     const updatedIngredient = await Ingredient.findByIdAndUpdate(id, req.body)
 
@@ -163,6 +184,7 @@ export const deleteIngredient = async (req, res, next) => {
     next(err)
   }
 }
+
 export const deleteAllIngredients = async (req, res, next) => {
   try {
     await Ingredient.deleteMany({})

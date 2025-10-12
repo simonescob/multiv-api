@@ -152,7 +152,6 @@ export const userSchema = yup.object().shape({
 
 export const productSchema = yup.object().shape({
   name: yup.string().required('Nombre requerido'),
-  price: yup.number('Precio no válido').max(999999, 'Precio demasiado elevado').positive('La cantidad debe ser positiva').required('Precio es requerido'),
   description: yup.string().max(140, 'Descripción no puede superar 140 caracteres'),
   ingredients: objectIdIngredientsArrayExistsValidation('ingrediente', Ingredient),
 })

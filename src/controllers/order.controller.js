@@ -22,6 +22,7 @@ export const findAllOrders = async (req, res, next) => {
     const data = await Order.paginate(condition, {
       offset,
       limit,
+      sort: { createdAt: -1 },
       populate: [
         {
           path: 'product',
