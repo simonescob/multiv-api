@@ -212,6 +212,7 @@ export const createMultipleOrders = async (req, res, next) => {
           product: lunch._id,
           quantity: 1, // Assuming each order represents one quantity
           active: true,
+          deliveryDate: orderData.deliveryDate ? new Date(orderData.deliveryDate) : null,
           // Add other necessary fields here
         });
         createdOrders.push(await newOrder.save());
@@ -223,6 +224,7 @@ export const createMultipleOrders = async (req, res, next) => {
           product: dinner._id,
           quantity: 1, // Assuming each order represents one quantity
           active: true,
+          deliveryDate: orderData.deliveryDate ? new Date(orderData.deliveryDate) : null,
           // Add other necessary fields here
         });
         createdOrders.push(await newOrder.save());
