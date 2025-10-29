@@ -1,3 +1,6 @@
+import Product from '../models/Product'
+import Order from '../models/Order'
+
 import KitchenOrder from '../models/KitchenOrder'
 import { getPagination } from '../libs/getPagination'
 import { setCounter } from '../libs/setCounter'
@@ -58,6 +61,12 @@ export const findAllKitchenOrders = async (req, res, next) => {
 export const createKitchenOrder = async (req, res, next) => {
   try {
     await kitchenOrderSchema.validate(req.body, { abortEarly: true })
+
+    // Check if any orders are already assigned to a kitchen order
+    const existingAssignments = await KitchenOrder.find({ orders: { $in: req.body.orders } })
+    if (existingAssignments.length > 0) {
+      return res.status(400).json({ error: 'Some orders are already assigned to a kitchen order.' })
+    }
 
     const count = await setCounter('KitchenOrder')
 
@@ -136,6 +145,17 @@ export const findAllActiveKitchenOrders = async (req, res, next) => {
 export const updateKitchenOrder = async (req, res, next) => {
   const id = req.params.id
   try {
+    // If updating orders, check for conflicts
+    if (req.body.orders) {
+      const existingAssignments = await KitchenOrder.find({
+        _id: { $ne: id },
+        orders: { $in: req.body.orders }
+      })
+      if (existingAssignments.length > 0) {
+        return res.status(400).json({ error: 'Some orders are already assigned to another kitchen order.' })
+      }
+    }
+
     const updateOrder = await KitchenOrder.findByIdAndUpdate(id, req.body)
 
     if (!updateOrder) {
@@ -388,6 +408,85 @@ export const updateOrderState = async (req, res, next) => {
         details: errors,
       })
     }
+    next(err)
+  }
+}
+
+
+export const searchKitchenOrdersByProductName = async (req, res, next) => {
+  const { search } = req.query
+
+  try {
+    // Validate search parameter
+    if (!search || search.trim() === '') {
+      return res.status(400).json({
+        error_message: 'Search parameter is required and cannot be empty.',
+      })
+    }
+
+    // Step 1: Find all products matching the search criteria
+    const matchingProducts = await Product.find({
+      name: { $regex: search, $options: 'i' }, // Case-insensitive search
+      deletedAt: null,
+    }).select('_id')
+
+    if (matchingProducts.length === 0) {
+      return res.json({
+        message: 'No products found matching the search criteria.',
+        kitchenOrders: [],
+      })
+    }
+
+    const productIds = matchingProducts.map((p) => p._id)
+
+    // Step 2: Find all orders containing these products
+    const ordersWithProducts = await Order.find({
+      product: { $in: productIds },
+      deletedAt: null,
+    }).select('_id')
+
+    if (ordersWithProducts.length === 0) {
+      return res.json({
+        message: 'No orders found containing the matching products.',
+        kitchenOrders: [],
+      })
+    }
+
+    const orderIds = ordersWithProducts.map((o) => o._id)
+
+    // Step 3: Find all kitchen orders containing these orders
+    const kitchenOrders = await KitchenOrder.find({
+      orders: { $in: orderIds },
+      deletedAt: null,
+    })
+      .populate({
+        path: 'orders',
+        select: 'user _id orderNum active price comments product deliveryDate cooking cooked',
+        populate: [
+          {
+            path: 'user',
+            select: 'name lastname username',
+          },
+          {
+            path: 'product',
+            select: 'name active',
+          },
+        ],
+      })
+      .populate({
+        path: 'user',
+        select: 'name lastname username',
+      })
+      .sort({ createdAt: -1 })
+
+    res.json({
+      message: `Found ${kitchenOrders.length} kitchen order(s) containing products matching "${search}".`,
+      searchQuery: search,
+      matchingProductsCount: matchingProducts.length,
+      matchingOrdersCount: ordersWithProducts.length,
+      kitchenOrders,
+    })
+  } catch (err) {
     next(err)
   }
 }
