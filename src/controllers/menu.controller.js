@@ -21,6 +21,7 @@ export const findAllMenus = async (req, res, next) => {
       offset,
       limit,
       name,
+      sort: { _id: -1 },
       populate: [
         {
           path: 'menuOptions.lunch',

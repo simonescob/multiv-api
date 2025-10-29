@@ -458,6 +458,7 @@ export const searchKitchenOrdersByProductName = async (req, res, next) => {
     const kitchenOrders = await KitchenOrder.find({
       orders: { $in: orderIds },
       deletedAt: null,
+      status: 'pending',
     })
       .populate({
         path: 'orders',
