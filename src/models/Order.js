@@ -37,7 +37,7 @@ const orderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['cooked', 'cooking', 'not_cooked'],
+      enum: ['cooked', 'cooking', 'not_cooked', 'to_cook'],
       default: 'not_cooked',
     },
     cooked: { 
