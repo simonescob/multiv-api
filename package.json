@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "DEBUG=app:* nodemon src/index --exec babel-node",
     "start": "NODE_ENV=production node dist/index",
-    "build": "babel src --out-dir dist"
+    "build": "babel src --out-dir dist",
+    "docker:dev": "docker-compose up --build",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up --build",
+    "docker:down": "docker-compose down",
+    "docker:clean": "docker-compose down -v --remove-orphans",
+    "docker:logs": "docker-compose logs -f",
+    "docker:mongo": "docker exec -it multiv-api-mongodb mongosh -u admin -p password --authenticationDatabase multiv_api"
   },
   "keywords": [],
   "author": "",

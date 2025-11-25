@@ -22,7 +22,32 @@ const app = express()
 
 // middlewares
 const corsOptions = {
-  origin: config.cors,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    let allowedOrigins = [];
+    
+    // Parse comma-separated origins from environment variable
+    if (typeof config.cors === 'string') {
+      if (config.cors === '*') {
+        allowedOrigins = ['*']; // Wildcard mode
+      } else {
+        allowedOrigins = config.cors.split(',').map(origin => origin.trim());
+      }
+    } else if (Array.isArray(config.cors)) {
+      allowedOrigins = config.cors;
+    } else {
+      allowedOrigins = [config.cors];
+    }
+    
+    // Check if origin is allowed
+    if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'), false);
+    }
+  },
   credentials: true,
 }
 

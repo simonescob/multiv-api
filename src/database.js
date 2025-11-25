@@ -4,7 +4,14 @@ import { config } from './config'
 const USER = encodeURIComponent(config.dbUser)
 const PASSWORD = encodeURIComponent(config.dbPassword)
 const DB_NAME = config.dbName
-const MONGO_URI = `mongodb+srv://${USER}:${PASSWORD}@${config.dbHost}/${DB_NAME}?retryWrites=true&w=majority`
+
+// Check if using MongoDB Atlas (cloud) or local MongoDB
+const isCloudMongoDB = config.dbHost.includes('mongodb+srv')
+
+// Construct appropriate connection string
+const MONGO_URI = isCloudMongoDB 
+  ? `mongodb+srv://${USER}:${PASSWORD}@${config.dbHost}/${DB_NAME}?retryWrites=true&w=majority`
+  : `mongodb://${USER}:${PASSWORD}@${config.dbHost}:27017/${DB_NAME}`
 
 ;(async () => {
   // eslint-disable-next-line no-useless-catch

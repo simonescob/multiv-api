@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: multiv-api-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: multiv_api
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - multiv-api-network
+
+  # Application Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: multiv-api-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 8000
+      CORS: http://localhost:8000,http://localhost:8080,http://localhost:4000
+      DB_USER: admin
+      DB_PASSWORD: password
+      DB_HOST: mongodb
+      DB_NAME: multiv_api
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      ACCESS_TOKEN_SECRET: your-access-token-secret
+      REFRESH_TOKEN_SECRET: your-refresh-token-secret
+    ports:
+      - "3000:3000"
+      - "8000:8000"
+      - "9229:9229" # Debug port for Node.js
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mongodb
+    networks:
+      - multiv-api-network
+    command: npm run dev
+
+  # MongoDB Express (MongoDB web UI)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: multiv-api-mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    networks:
+      - multiv-api-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  multiv-api-network:
+    driver: bridge
