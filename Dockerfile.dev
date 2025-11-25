@@ -1,0 +1,26 @@
+# Development Dockerfile
+# Use this for Docker-based development workflow
+# Run with: docker build -f Dockerfile.dev -t multiv-api:dev .
+# Then: docker run -p 8000:8000 multiv-api:dev
+
+FROM node:18-alpine AS development
+WORKDIR /usr/src/app
+
+# Copy package files
+COPY package*.json ./
+COPY bun.lockb ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Copy babel configuration
+COPY src/.babelrc ./
+
+# Expose port
+EXPOSE 8000
+
+# Development command with hot reload
+CMD ["npm", "run", "dev"]

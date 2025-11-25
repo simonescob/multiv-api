@@ -1,6 +1,8 @@
-# Multi-stage build for better optimization
+# Multi-stage production build
+# Docker is used only for production deployment (e.g., Railway)
+# Local development should use: npm run dev
 
-# Stage 1: Dependencies installation
+# Stage 1: Install production dependencies
 FROM node:18-alpine AS deps
 WORKDIR /usr/src/app
 
@@ -8,33 +10,10 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY bun.lockb ./
 
-# Install dependencies
+# Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Stage 2: Development build
-FROM node:18-alpine AS dev
-WORKDIR /usr/src/app
-
-# Copy package files
-COPY package*.json ./
-COPY bun.lockb ./
-
-# Install all dependencies (including dev dependencies)
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Copy babel configuration
-COPY src/.babelrc ./
-
-# Expose port
-EXPOSE 8000
-
-# Development command
-CMD ["npm", "run", "dev"]
-
-# Stage 3: Production build
+# Stage 2: Build application
 FROM node:18-alpine AS build
 WORKDIR /usr/src/app
 
@@ -42,7 +21,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY bun.lockb ./
 
-# Install all dependencies
+# Install all dependencies (needed for build)
 RUN npm ci
 
 # Copy source code
@@ -54,7 +33,7 @@ COPY src/.babelrc ./
 # Build the application
 RUN npm run build
 
-# Stage 4: Production runtime
+# Stage 3: Production runtime
 FROM node:18-alpine AS production
 WORKDIR /usr/src/app
 
@@ -77,6 +56,3 @@ EXPOSE 3000
 
 # Production command
 CMD ["npm", "start"]
-
-# Default stage (can be overridden with --target)
-FROM production AS default
