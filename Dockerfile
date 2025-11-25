@@ -79,4 +79,4 @@ EXPOSE 3000
 CMD ["npm", "start"]
 
 # Default stage (can be overridden with --target)
-FROM dev AS default
+FROM production AS default
