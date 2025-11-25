@@ -45,8 +45,8 @@ COPY --from=build --chown=nodejs:nodejs /usr/src/app/dist ./dist
 COPY --from=deps --chown=nodejs:nodejs /usr/src/app/node_modules ./node_modules
 COPY --from=build --chown=nodejs:nodejs /usr/src/app/package.json ./
 
-# Copy public uploads directory if exists
-COPY --chown=nodejs:nodejs src/public ./src/public
+# Create public uploads directory for file storage
+RUN mkdir -p ./src/public/uploads && chown -R nodejs:nodejs ./src/public
 
 # Switch to non-root user
 USER nodejs
