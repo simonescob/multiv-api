@@ -1,4 +1,10 @@
-require('dotenv').config()
+// Load environment variables based on NODE_ENV
+// Default to .env, but load .env.production if NODE_ENV=production
+if (process.env.NODE_ENV === 'production') {
+  require('dotenv').config({ path: '.env.production' })
+} else {
+  require('dotenv').config()
+}
 
 const config = {
   dev: process.env.NODE_ENV !== 'production',

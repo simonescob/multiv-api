@@ -1,6 +1,11 @@
 import mongoose from 'mongoose'
 import { config } from './config'
 
+// Validate required environment variables
+if (!config.dbUser || !config.dbPassword || !config.dbHost || !config.dbName) {
+  throw new Error('Missing required database environment variables. Please check DB_USER, DB_PASSWORD, DB_HOST, and DB_NAME.')
+}
+
 const USER = encodeURIComponent(config.dbUser)
 const PASSWORD = encodeURIComponent(config.dbPassword)
 const DB_NAME = config.dbName
