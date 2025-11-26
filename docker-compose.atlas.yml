@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Application Service - Using MongoDB Atlas
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: multiv-api-app-prod
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      CORS: ${CORS:-*}
+      DB_USER: testing_db
+      DB_PASSWORD: XqfMFUboVylFKHie
+      DB_HOST: cluster0.2zmxz.mongodb.net
+      DB_NAME: data_viandas
+      JWT_SECRET: GfdCcruWGyGuTfC4d0JJ
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+    ports:
+      - "3000:3000"
+    networks:
+      - multiv-api-network
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: multiv-api-nginx-prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - multiv-api-network
+
+networks:
+  multiv-api-network:
+    driver: bridge

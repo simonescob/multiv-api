@@ -11,7 +11,10 @@ const PASSWORD = encodeURIComponent(config.dbPassword)
 const DB_NAME = config.dbName
 
 // Check if using MongoDB Atlas (cloud) or local MongoDB
-const isCloudMongoDB = config.dbHost.includes('mongodb+srv')
+// Atlas clusters typically use .mongodb.net or .mongodb.com domains
+const isCloudMongoDB = config.dbHost.includes('mongodb+srv') || 
+                       config.dbHost.includes('.mongodb.net') || 
+                       config.dbHost.includes('.mongodb.com')
 
 // Construct appropriate connection string
 const MONGO_URI = isCloudMongoDB 

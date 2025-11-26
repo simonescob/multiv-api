@@ -33,17 +33,18 @@ services:
       NODE_ENV: production
       PORT: ${PORT:-3000}
       CORS: ${CORS}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: mongodb
-      DB_NAME: ${DB_NAME}
-      JWT_SECRET: ${JWT_SECRET}
+      DB_USER: ${DB_USER:-testing_db}
+      DB_PASSWORD: ${DB_PASSWORD:-XqfMFUboVylFKHie}
+      DB_HOST: ${DB_HOST:-cluster0.2zmxz.mongodb.net}
+      DB_NAME: ${DB_NAME:-data_viandas}
+      JWT_SECRET: ${JWT_SECRET:-GfdCcruWGyGuTfC4d0JJ}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
     ports:
       - "${PORT:-3000}:3000"
-    depends_on:
-      - mongodb
+    # Using MongoDB Atlas - no local dependency needed
+    # depends_on:
+    #   - mongodb
     networks:
       - multiv-api-network
     # Health check
