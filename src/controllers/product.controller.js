@@ -48,6 +48,19 @@ export const createProduct = async (req, res, next) => {
   try {
     await productSchema.validate(req.body, { abortEarly: true })
 
+    // Check if a product with the same name already exists
+    const existingProduct = await Product.findOne({ 
+      name: { $regex: new RegExp(`^${req.body.name}$`, 'i') },
+      deletedAt: null 
+    })
+    
+    if (existingProduct) {
+      return res.status(400).json({ 
+        error: 'Ya existe un producto con este nombre',
+        message: `Producto con nombre "${req.body.name}" ya existe`
+      })
+    }
+
     const arrayIngredients = req.body.ingredients.map((ing) => ({
       ingredient: ing.ingredient,
       gms: ing.gms,
