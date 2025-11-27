@@ -65,7 +65,7 @@ export const createKitchenOrder = async (req, res, next) => {
     // Check if any orders are already assigned to a kitchen order
     const existingAssignments = await KitchenOrder.find({ orders: { $in: req.body.orders } })
     if (existingAssignments.length > 0) {
-      return res.status(400).json({ error: 'Some orders are already assigned to a kitchen order.' })
+      return res.status(400).json({ error: 'Algunos pedidos ya están asignados a una orden de cocina.' })
     }
 
     const count = await setCounter('KitchenOrder')
@@ -123,7 +123,7 @@ export const findOneKitchenOrder = async (req, res, next) => {
       })
     if (!order) {
       return res.status(404).json({
-        error_message: `The kitchen order with id ${id} does not exists.`,
+        error_message: `La orden de cocina con id ${id} no existe.`,
       })
     }
 
@@ -152,7 +152,7 @@ export const updateKitchenOrder = async (req, res, next) => {
         orders: { $in: req.body.orders }
       })
       if (existingAssignments.length > 0) {
-        return res.status(400).json({ error: 'Some orders are already assigned to another kitchen order.' })
+        return res.status(400).json({ error: 'Algunos pedidos ya están asignados a otra orden de cocina.' })
       }
     }
 
@@ -160,11 +160,11 @@ export const updateKitchenOrder = async (req, res, next) => {
 
     if (!updateOrder) {
       return res.status(404).json({
-        error_message: `Kitchen order with id ${id} does not exists.`,
+        error_message: `La orden de cocina con id ${id} no existe.`,
       })
     }
     res.json({
-      message: `Kitchen order ${id} updated.`,
+      message: `Orden de cocina ${id} actualizada.`,
     })
   } catch (err) {
     next(err)
@@ -177,11 +177,11 @@ export const deleteKitchenOrder = async (req, res, next) => {
     const deleteOrder = await KitchenOrder.findByIdAndDelete(id)
     if (!deleteOrder) {
       return res.status(404).json({
-        error_message: `Kitchen order with id ${id} does not exists.`,
+        error_message: `La orden de cocina con id ${id} no existe.`,
       })
     }
     res.json({
-      message: `Kitchen order with id ${id} was deleted.`,
+      message: `La orden de cocina con id ${id} fue eliminada.`,
     })
   } catch (err) {
     next(err)
@@ -191,10 +191,10 @@ export const deleteKitchenOrder = async (req, res, next) => {
 export const deleteAllKitchenOrders = async (req, res, next) => {
   try {
     await KitchenOrder.deleteMany({})
-    res.status(200).send({ message: 'All kitchen orders was deleted.' })
+    res.status(200).send({ message: 'Todas las órdenes de cocina fueron eliminadas.' })
   } catch (error) {
     console.error('Error:', error)
-    res.status(500).send({ message: 'Error trying delete all orders.' })
+    res.status(500).send({ message: 'Error al intentar eliminar todas las órdenes.' })
 
     next()
   }
@@ -211,11 +211,11 @@ export const sendToTrashKitchenOrder = async (req, res, next) => {
 
     if (!updateKitchenOrder) {
       return res.status(404).json({
-        error_message: `The kitchen order with id ${id} does not exists.`,
+        error_message: `La orden de cocina con id ${id} no existe.`,
       })
     }
     res.json({
-      message: `The kitchen order ${id} send to trash.`,
+      message: `La orden de cocina ${id} fue enviada a la papelera.`,
     })
   } catch (err) {
     next(err)
@@ -232,7 +232,7 @@ export const KitchenOrdersByUser = async (req, res, next) => {
     
     if (!userExists) {
       return res.status(404).json({
-        error_message: `User with id ${userId} does not exist.`,
+        error_message: `El usuario con id ${userId} no existe.`,
       });
     }
 
@@ -290,7 +290,7 @@ export const KitchenOrdersByUser = async (req, res, next) => {
 
     if (!kitchenOrders.length) {
       return res.status(404).json({
-        error_message: `User with id ${userId} exists, but has no kitchen orders for the specified date range.`,
+        error_message: `El usuario con id ${userId} existe, pero no tiene órdenes de cocina para el rango de fechas especificado.`,
       });
     }
 
@@ -355,7 +355,7 @@ export const updateOrderState = async (req, res, next) => {
     // Validate that status is provided and is a valid enum value
     if (!status) {
       return res.status(400).json({
-        error_message: 'Status is required for state update.',
+        error_message: 'El estado es requerido para la actualización de estado.',
       })
     }
 
@@ -363,7 +363,7 @@ export const updateOrderState = async (req, res, next) => {
     const validStatuses = ['pending', 'preparing', 'ready_for_delivery', 'delivered']
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
-        error_message: `Invalid status. Valid statuses are: ${validStatuses.join(', ')}`,
+        error_message: `Estado inválido. Los estados válidos son: ${validStatuses.join(', ')}`,
       })
     }
 
@@ -391,12 +391,12 @@ export const updateOrderState = async (req, res, next) => {
 
     if (!updatedOrder) {
       return res.status(404).json({
-        error_message: `Kitchen order with id ${id} does not exist.`,
+        error_message: `La orden de cocina con id ${id} no existe.`,
       })
     }
 
     res.json({
-      message: `Kitchen order ${id} state updated successfully.`,
+      message: `Estado de la orden de cocina ${id} actualizado exitosamente.`,
       order: updatedOrder,
     })
   } catch (err) {
@@ -404,7 +404,7 @@ export const updateOrderState = async (req, res, next) => {
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map(error => error.message)
       return res.status(400).json({
-        error_message: 'Validation error',
+        error_message: 'Error de validación',
         details: errors,
       })
     }
@@ -420,7 +420,7 @@ export const searchKitchenOrdersByProductName = async (req, res, next) => {
     // Validate search parameter
     if (!search || search.trim() === '') {
       return res.status(400).json({
-        error_message: 'Search parameter is required and cannot be empty.',
+        error_message: 'El parámetro de búsqueda es requerido y no puede estar vacío.',
       })
     }
 
@@ -432,7 +432,7 @@ export const searchKitchenOrdersByProductName = async (req, res, next) => {
 
     if (matchingProducts.length === 0) {
       return res.json({
-        message: 'No products found matching the search criteria.',
+        message: 'No se encontraron productos que coincidan con los criterios de búsqueda.',
         kitchenOrders: [],
       })
     }
@@ -447,45 +447,34 @@ export const searchKitchenOrdersByProductName = async (req, res, next) => {
 
     if (ordersWithProducts.length === 0) {
       return res.json({
-        message: 'No orders found containing the matching products.',
+        message: 'No se encontraron órdenes que contengan los productos coincidentes.',
         kitchenOrders: [],
       })
     }
 
     const orderIds = ordersWithProducts.map((o) => o._id)
 
-    // Step 3: Find all kitchen orders containing these orders
-    const kitchenOrders = await KitchenOrder.find({
-      orders: { $in: orderIds },
+    // Step 3: Find all orders matching the search criteria with populated data
+    const matchingOrders = await Order.find({
+      _id: { $in: orderIds },
       deletedAt: null,
-      status: 'pending',
     })
-      .populate({
-        path: 'orders',
-        select: 'user _id orderNum active price comments product deliveryDate cooking cooked',
-        populate: [
-          {
-            path: 'user',
-            select: 'name lastname username',
-          },
-          {
-            path: 'product',
-            select: 'name active',
-          },
-        ],
-      })
       .populate({
         path: 'user',
         select: 'name lastname username',
       })
+      .populate({
+        path: 'product',
+        select: 'name active',
+      })
       .sort({ createdAt: -1 })
 
     res.json({
-      message: `Found ${kitchenOrders.length} kitchen order(s) containing products matching "${search}".`,
+      message: `Se encontraron ${matchingOrders.length} orden(es) que contienen productos que coinciden con "${search}".`,
       searchQuery: search,
       matchingProductsCount: matchingProducts.length,
       matchingOrdersCount: ordersWithProducts.length,
-      kitchenOrders,
+      orders: matchingOrders,
     })
   } catch (err) {
     next(err)
