@@ -5,6 +5,18 @@ import { orderSchema } from '../libs/validation/yupSchemas'
 import Product from '../models/Product'
 import User from '../models/User'
 
+/**
+ * Retrieves all orders with pagination, filtering by search term and active status.
+ * Populates product and user details for each order.
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Query parameters
+ * @param {string} req.query.size - Number of items per page
+ * @param {string} req.query.page - Page number
+ * @param {string} req.query.search - Search term for order number
+ * @param {string} req.query.isActive - Filter by active status ('true' or 'false')
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const findAllOrders = async (req, res, next) => {
   try {
     const { size, page, search, isActive } = req.query
@@ -46,6 +58,14 @@ export const findAllOrders = async (req, res, next) => {
   }
 }
 
+/**
+ * Creates a new order after validating the input data.
+ * Assigns a unique order number and sets default active status to true.
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body containing order data
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const createOrder = async (req, res, next) => {
   const { product, user, comments, price, deliveryDate, cookDate, delivered, delivering, cooked, cooking } = req.body
 
@@ -87,6 +107,14 @@ export const createOrder = async (req, res, next) => {
   }
 }
 
+/**
+ * Retrieves a single order by its ID, populating product and user details.
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.id - Order ID
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const findOneOrder = async (req, res, next) => {
   const { id } = req.params
 
@@ -112,6 +140,12 @@ export const findOneOrder = async (req, res, next) => {
   }
 }
 
+/**
+ * Retrieves all orders that are currently active.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const findAllActiveOrders = async (req, res, next) => {
   try {
     const activeOrders = await Order.find({ active: true })
@@ -128,6 +162,15 @@ export const findAllActiveOrders = async (req, res, next) => {
     })
 }
 
+/**
+ * Updates an existing order by its ID with the provided data.
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.id - Order ID
+ * @param {Object} req.body - Update data
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const updateOrder = async (req, res, next) => {
   const id = req.params.id
   try {
@@ -146,6 +189,14 @@ export const updateOrder = async (req, res, next) => {
   }
 }
 
+/**
+ * Toggles the soft delete status of an order by setting or clearing the deletedAt field.
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.id - Order ID
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const sendToTrashOrder = async (req, res, next) => {
   const id = req.params.id
   try {
@@ -168,6 +219,14 @@ export const sendToTrashOrder = async (req, res, next) => {
   }
 }
 
+/**
+ * Permanently deletes an order by its ID.
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.id - Order ID
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const deleteOrder = async (req, res, next) => {
   const { id } = req.params
   try {
@@ -185,6 +244,12 @@ export const deleteOrder = async (req, res, next) => {
   }
 }
 
+/**
+ * Deletes all orders from the database.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const deleteAllOrders = async (req, res, next) => {
   try {
     await Order.deleteMany({})
@@ -197,6 +262,13 @@ export const deleteAllOrders = async (req, res, next) => {
   }
 }
 
+/**
+ * Creates multiple orders based on lunch and dinner quantities for each order data entry.
+ * @param {Object} req - Express request object
+ * @param {Array} req.body - Array of order data objects
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const createMultipleOrders = async (req, res, next) => {
   const ordersData = req.body;
 
@@ -238,6 +310,18 @@ export const createMultipleOrders = async (req, res, next) => {
   }
 }
 
+/**
+ * Searches for orders by text in order number, comments, product names, or user details.
+ * Supports pagination and active status filtering.
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Query parameters
+ * @param {string} req.query.size - Number of items per page
+ * @param {string} req.query.page - Page number
+ * @param {string} req.query.search - Search text
+ * @param {string} req.query.isActive - Filter by active status ('true' or 'false')
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 export const findOrdersByText = async (req, res, next) => {
   try {
     const { size, page, search, isActive } = req.query
