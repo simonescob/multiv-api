@@ -454,9 +454,24 @@ export const searchKitchenOrdersByProductName = async (req, res, next) => {
 
     const orderIds = ordersWithProducts.map((o) => o._id)
 
-    // Step 3: Find all orders matching the search criteria with populated data
+    // Step 3: Find all KitchenOrders that contain any of these orders
+    const kitchenOrdersWithMatchingOrders = await KitchenOrder.find({
+      orders: { $in: orderIds },
+      deletedAt: null,
+    }).select('orders')
+
+    // Extract order IDs that are already assigned to KitchenOrders
+    const assignedOrderIds = new Set()
+    kitchenOrdersWithMatchingOrders.forEach((ko) => {
+      ko.orders.forEach((orderId) => assignedOrderIds.add(orderId.toString()))
+    })
+
+    // Step 4: Find orders that are NOT assigned to any KitchenOrder
+    const unassignedOrderIds = orderIds.filter((orderId) => !assignedOrderIds.has(orderId.toString()))
+
+    // Step 5: Find all unassigned orders matching the search criteria with populated data
     const matchingOrders = await Order.find({
-      _id: { $in: orderIds },
+      _id: { $in: unassignedOrderIds },
       deletedAt: null,
     })
       .populate({
@@ -470,10 +485,7 @@ export const searchKitchenOrdersByProductName = async (req, res, next) => {
       .sort({ createdAt: -1 })
 
     res.json({
-      message: `Se encontraron ${matchingOrders.length} orden(es) que contienen productos que coinciden con "${search}".`,
-      searchQuery: search,
-      matchingProductsCount: matchingProducts.length,
-      matchingOrdersCount: ordersWithProducts.length,
+      message: `Se encontraron ${matchingOrders.length} orden(es) que contienen productos que coinciden con "${search}" y no están asignadas a Pedido Cocina.`,
       orders: matchingOrders,
     })
   } catch (err) {
