@@ -3,51 +3,32 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 
 const deliveryOrderSchema = new Schema(
   {
-    deliveryOrderNum: {
-      type: Number,
-      required: true,
-      trim: true,
-      maxlength: 10,
-    },
-
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-    },
-    orders: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Order',
-      },
-    ],
-    comments: {
-      type: String,
-      trim: true,
-      maxlength: 100,
     },
     address: {
       type: String,
       trim: true,
       maxlength: 100,
     },
-    delivered: {
-      type: Boolean,
-      default: false,
-    },
-    delivering: {
-      type: Boolean,
-      default: false,
+    orders: [
+      {
+        type: Schema.Types.Mixed,
+      },
+    ],
+    status: {
+      type: String,
+      enum: ['to_delivery', 'delivered', 'delivering', 'not_delivered'],
+      default: 'to_delivery',
     },
     deliveryDate: {
       type: Date,
     },
-    active: {
-      type: Boolean,
-      default: true,
-    },
-    deletedAt: {
-      type: Date,
-      default: null,
+    comments: {
+      type: String,
+      trim: true,
+      maxlength: 100,
     },
   },
   {
